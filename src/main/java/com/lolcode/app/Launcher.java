@@ -8,6 +8,6 @@ public class Launcher {
     
     public static void main(String[] args) {
         VirtualMachine app = new VirtualMachineBuilder().build();
-        app.run(new FileSourceCode("cmd/src/main/resources/test.lol"));
+        app.run(new FileSourceCode("src/main/resources/test.lol"));
     }
 }
