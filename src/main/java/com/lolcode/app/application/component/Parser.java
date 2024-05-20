@@ -1,15 +1,15 @@
 package com.lolcode.app.application.component;
 
-import com.lolcode.app.domain.ByteCode;
-import com.lolcode.app.domain.SourceCode;
+import com.lolcode.app.domain.SyntaxTree;
+import com.lolcode.app.domain.Tokens;
 
 /**
  * @author Mykhailo Balakhon
  * @link <a href="mailto:mykhailo.balakhon@communify.us">mykhailo.balakhon@communify.us</a>
  */
-public class Compiler {
+public class Parser {
 
-    public ByteCode compile(final SourceCode sourceCode) {
+    public SyntaxTree parse(Tokens tokens) {
         throw new UnsupportedOperationException("Method not implemented!");
     }
 }
