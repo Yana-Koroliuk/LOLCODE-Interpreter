@@ -7,10 +7,6 @@ import com.lolcode.app.domain.SourceCode;
 import com.lolcode.app.domain.SyntaxTree;
 import com.lolcode.app.domain.Tokens;
 
-/**
- * @author Mykhailo Balakhon
- * @link <a href="mailto:mykhailo.balakhon@communify.us">mykhailo.balakhon@communify.us</a>
- */
 public class VirtualMachine {
     private final Lexer lexer;
     private final Parser parser;
