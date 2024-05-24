@@ -1,14 +1,21 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Loop extends ASTNode {
     private String label;
-    private Block body;
+    private List<ASTNode> body;
+
+    public Loop(String label, List<ASTNode> body) {
+        super(ParseType.Loop);
+        this.label = label;
+        this.body = body;
+    }
 
     @Override
     public String toString() {

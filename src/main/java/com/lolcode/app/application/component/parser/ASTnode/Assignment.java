@@ -1,14 +1,19 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Assignment extends ASTNode {
     private String variable;
     private ASTNode value;
+
+    public Assignment(String variable, ASTNode value) {
+        super(ParseType.Assignment);
+        this.variable = variable;
+        this.value = value;
+    }
 
     @Override
     public String toString() {

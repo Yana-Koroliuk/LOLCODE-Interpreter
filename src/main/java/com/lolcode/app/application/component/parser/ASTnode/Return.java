@@ -1,13 +1,17 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Return extends ASTNode {
     private ASTNode value;
+
+    public Return(ASTNode value) {
+        super(ParseType.Return);
+        this.value = value;
+    }
 
     @Override
     public String toString() {

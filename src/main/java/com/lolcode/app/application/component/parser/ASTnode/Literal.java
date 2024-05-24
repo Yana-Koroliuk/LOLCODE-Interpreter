@@ -1,14 +1,19 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Literal extends ASTNode {
     private String valueType;
     private Object value;
+
+    public Literal(String valueType, Object value) {
+        super(ParseType.Literal);
+        this.valueType = valueType;
+        this.value = value;
+    }
 
     @Override
     public String toString() {

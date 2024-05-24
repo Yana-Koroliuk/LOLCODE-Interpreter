@@ -1,16 +1,21 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class FunctionCall extends ASTNode {
     private String name;
     private List<ASTNode> args;
+
+    public FunctionCall(String name, List<ASTNode> args) {
+        super(ParseType.FunctionCall);
+        this.name = name;
+        this.args = args;
+    }
 
     @Override
     public String toString() {

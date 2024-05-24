@@ -1,17 +1,27 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class IterativeLoop extends ASTNode {
     private String label;
     private String operation;
     private ASTNode variable;
     private ASTNode condition;
-    private Block body;
+    private List<ASTNode> body;
+
+    public IterativeLoop(String label, String operation, ASTNode variable, ASTNode condition, List<ASTNode> body) {
+        super(ParseType.IterativeLoop);
+        this.label = label;
+        this.operation = operation;
+        this.variable = variable;
+        this.condition = condition;
+        this.body = body;
+    }
 
     @Override
     public String toString() {

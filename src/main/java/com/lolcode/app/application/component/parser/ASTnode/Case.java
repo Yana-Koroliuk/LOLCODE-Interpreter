@@ -1,14 +1,21 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Case extends ASTNode {
     private ASTNode value;
-    private Block body;
+    private List<ASTNode> body;
+
+    public Case(ASTNode value, List<ASTNode> body) {
+        super(ParseType.Case);
+        this.value = value;
+        this.body = body;
+    }
 
     @Override
     public String toString() {

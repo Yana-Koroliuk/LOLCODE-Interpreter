@@ -1,18 +1,25 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Conditional extends ASTNode {
     private ASTNode condition;
     private Block trueBranch;
     private List<MebbeBranch> mebbeBranches;
     private Block falseBranch;
+
+    public Conditional(ASTNode condition, Block trueBranch, List<MebbeBranch> mebbeBranches, Block falseBranch) {
+        super(ParseType.Conditional);
+        this.condition = condition;
+        this.trueBranch = trueBranch;
+        this.mebbeBranches = mebbeBranches;
+        this.falseBranch = falseBranch;
+    }
 
     @Override
     public String toString() {

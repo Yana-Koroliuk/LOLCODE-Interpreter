@@ -1,14 +1,19 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Casting extends ASTNode {
     private ASTNode value;
     private String castTo;
+
+    public Casting(ASTNode value, String castTo) {
+        super(ParseType.Casting);
+        this.value = value;
+        this.castTo = castTo;
+    }
 
     @Override
     public String toString() {
