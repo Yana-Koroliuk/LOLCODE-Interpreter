@@ -8,9 +8,9 @@ import java.util.List;
 @Getter
 @Setter
 public class DefaultCase extends ASTNode {
-    private List<ASTNode> body;
+    private Block body;
 
-    public DefaultCase(List<ASTNode> body) {
+    public DefaultCase(Block body) {
         super(ParseType.DefaultCase);
         this.body = body;
     }

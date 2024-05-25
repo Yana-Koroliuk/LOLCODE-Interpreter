@@ -27,6 +27,8 @@ public class Parser {
         statementParsers.put("VISIBLE", this::parsePrintStatement);
         statementParsers.put("GIMMEH", this::parseInputStatement);
         statementParsers.put("O RLY?", this::parseConditional);
+        statementParsers.put("WTF?", this::parseSwitch);
+        statementParsers.put("GTFO", this::parseConditionalBreak);
         statementParsers.put("KTHXBYE", this::parseEndProgram);
 
         addCommonParsers(statementParsers);
@@ -286,13 +288,52 @@ public class Parser {
         return new Conditional(condition, trueBranch, mebbeBranches, falseBranch);
     }
 
+    private Switch parseSwitch() {
+        consume(Token.Type.KEYWORD);
+        consumeNewline();
+        ASTNode condition = new Identifier("IT");
+
+        List<Case> cases = new ArrayList<>();
+        DefaultCase defaultCase = null;
+
+        while (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD &&
+                !tokens.get(currentTokenIndex).getValue().equals("OIC")) {
+            if (tokens.get(currentTokenIndex).getValue().equals("OMG")) {
+                consume(Token.Type.KEYWORD);
+                ASTNode caseValue = parseExpression();
+                consumeNewline();
+                Block caseBody = parseBlock();
+                cases.add(new Case(caseValue, caseBody));
+            } else if (tokens.get(currentTokenIndex).getValue().equals("OMGWTF")) {
+                consume(Token.Type.KEYWORD);
+                consumeNewline();
+                Block defaultBody = parseBlock();
+                defaultCase = new DefaultCase(defaultBody);
+            } else {
+                throw new IllegalArgumentException("Unknown keyword in switch statement: " + tokens.get(currentTokenIndex).getValue());
+            }
+        }
+
+        consume(Token.Type.KEYWORD);
+        consumeNewline();
+        return new Switch(condition, cases, defaultCase);
+    }
+
+    private ConditionalBreak parseConditionalBreak() {
+        consume(Token.Type.KEYWORD);
+        consumeNewline();
+        return new ConditionalBreak(new Identifier("IT"));
+    }
+
     private Block parseBlock() {
         List<ASTNode> body = new ArrayList<>();
         while (tokens.get(currentTokenIndex).getType() == Token.Type.NEWLINE ||
                 (tokens.get(currentTokenIndex).getType() != Token.Type.KEYWORD || (
                         !tokens.get(currentTokenIndex).getValue().equals("OIC") &&
                                 !tokens.get(currentTokenIndex).getValue().equals("MEBBE") &&
-                                !tokens.get(currentTokenIndex).getValue().equals("NO WAI")))) {
+                                !tokens.get(currentTokenIndex).getValue().equals("NO WAI") &&
+                                !tokens.get(currentTokenIndex).getValue().equals("OMG") &&
+                                !tokens.get(currentTokenIndex).getValue().equals("OMGWTF")))) {
             if (tokens.get(currentTokenIndex).getType() == Token.Type.NEWLINE) {
                 currentTokenIndex++;
                 continue;
