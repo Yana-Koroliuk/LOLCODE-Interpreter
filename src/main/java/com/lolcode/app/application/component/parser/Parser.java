@@ -26,6 +26,7 @@ public class Parser {
         statementParsers.put("I HAS A", this::parseVariableDeclaration);
         statementParsers.put("VISIBLE", this::parsePrintStatement);
         statementParsers.put("GIMMEH", this::parseInputStatement);
+        statementParsers.put("O RLY?", this::parseConditional);
         statementParsers.put("KTHXBYE", this::parseEndProgram);
 
         addCommonParsers(statementParsers);
@@ -253,6 +254,61 @@ public class Parser {
         }
 
         return new BooleanOperation(operator, operands);
+    }
+
+    private Conditional parseConditional() {
+        consume(Token.Type.KEYWORD);
+        consumeNewline();
+        ASTNode condition = new Identifier("IT");
+
+        consume(Token.Type.KEYWORD);
+        consumeNewline();
+        Block trueBranch = parseBlock();
+
+        List<MebbeBranch> mebbeBranches = new ArrayList<>();
+        while (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD && tokens.get(currentTokenIndex).getValue().equals("MEBBE")) {
+            consume(Token.Type.KEYWORD);
+            ASTNode mebbeCondition = parseExpression();
+            consumeNewline();
+            Block mebbeBody = parseBlock();
+            mebbeBranches.add(new MebbeBranch(mebbeCondition, mebbeBody));
+        }
+
+        Block falseBranch = null;
+        if (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD && tokens.get(currentTokenIndex).getValue().equals("NO WAI")) {
+            consume(Token.Type.KEYWORD);
+            consumeNewline();
+            falseBranch = parseBlock();
+        }
+
+        consume(Token.Type.KEYWORD);
+        consumeNewline();
+        return new Conditional(condition, trueBranch, mebbeBranches, falseBranch);
+    }
+
+    private Block parseBlock() {
+        List<ASTNode> body = new ArrayList<>();
+        while (tokens.get(currentTokenIndex).getType() == Token.Type.NEWLINE ||
+                (tokens.get(currentTokenIndex).getType() != Token.Type.KEYWORD || (
+                        !tokens.get(currentTokenIndex).getValue().equals("OIC") &&
+                                !tokens.get(currentTokenIndex).getValue().equals("MEBBE") &&
+                                !tokens.get(currentTokenIndex).getValue().equals("NO WAI")))) {
+            if (tokens.get(currentTokenIndex).getType() == Token.Type.NEWLINE) {
+                currentTokenIndex++;
+                continue;
+            }
+            ASTNode statement = parseStatement();
+            if (statement != null) {
+                body.add(statement);
+            }
+        }
+        return new Block(body);
+    }
+
+    private void consumeNewline() {
+        if (tokens.get(currentTokenIndex).getType() == Token.Type.NEWLINE) {
+            currentTokenIndex++;
+        }
     }
 
     private Token consume(Token.Type expectedType) {
