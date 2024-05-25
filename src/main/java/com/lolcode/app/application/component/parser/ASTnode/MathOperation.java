@@ -12,7 +12,7 @@ public class MathOperation extends ASTNode {
     private List<ASTNode> operands;
 
     public MathOperation(String operator, List<ASTNode> operands) {
-        super(ParseType.MathOperation);
+        super(ParseType.MATH_OPERATION);
         this.operator = operator;
         this.operands = operands;
     }

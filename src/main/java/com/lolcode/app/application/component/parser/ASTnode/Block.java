@@ -11,7 +11,7 @@ public class Block extends ASTNode {
     private List<ASTNode> body;
 
     public Block(List<ASTNode> body) {
-        super(ParseType.Block);
+        super(ParseType.BLOCK);
         this.body = body;
     }
 

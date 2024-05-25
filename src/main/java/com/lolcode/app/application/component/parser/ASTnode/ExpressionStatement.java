@@ -9,7 +9,7 @@ public class ExpressionStatement extends ASTNode {
     private ASTNode expression;
 
     public ExpressionStatement(ASTNode expression) {
-        super(ParseType.ExpressionStatement);
+        super(ParseType.EXPRESSION_STATEMENT);
         this.expression = expression;
     }
 

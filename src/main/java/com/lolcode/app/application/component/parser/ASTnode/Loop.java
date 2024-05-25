@@ -12,7 +12,7 @@ public class Loop extends ASTNode {
     private List<ASTNode> body;
 
     public Loop(String label, List<ASTNode> body) {
-        super(ParseType.Loop);
+        super(ParseType.LOOP);
         this.label = label;
         this.body = body;
     }

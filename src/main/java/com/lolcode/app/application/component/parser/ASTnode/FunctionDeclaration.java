@@ -13,7 +13,7 @@ public class FunctionDeclaration extends ASTNode {
     private List<ASTNode> body;
 
     public FunctionDeclaration(String name, List<String> params, List<ASTNode> body) {
-        super(ParseType.FunctionDeclaration);
+        super(ParseType.FUNCTION_DECLARATION);
         this.name = name;
         this.params = params;
         this.body = body;

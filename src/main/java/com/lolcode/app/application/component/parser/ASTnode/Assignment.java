@@ -10,7 +10,7 @@ public class Assignment extends ASTNode {
     private ASTNode value;
 
     public Assignment(String variable, ASTNode value) {
-        super(ParseType.Assignment);
+        super(ParseType.ASSIGNMENT);
         this.variable = variable;
         this.value = value;
     }

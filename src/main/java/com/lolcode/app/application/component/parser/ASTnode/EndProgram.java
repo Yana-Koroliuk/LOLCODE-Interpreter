@@ -8,7 +8,7 @@ import lombok.*;
 public class EndProgram extends ASTNode {
 
     public EndProgram() {
-        super(ParseType.EndProgram);
+        super(ParseType.END_PROGRAM);
     }
 
     @Override

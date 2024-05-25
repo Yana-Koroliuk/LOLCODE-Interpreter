@@ -9,7 +9,7 @@ public class ConditionalBreak extends ASTNode {
     private ASTNode condition;
 
     public ConditionalBreak(ASTNode condition) {
-        super(ParseType.ConditionalBreak);
+        super(ParseType.CONDITIONAL_BREAK);
         this.condition = condition;
     }
 

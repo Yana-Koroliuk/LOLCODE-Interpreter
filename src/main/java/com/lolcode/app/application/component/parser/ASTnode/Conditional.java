@@ -14,7 +14,7 @@ public class Conditional extends ASTNode {
     private Block falseBranch;
 
     public Conditional(ASTNode condition, Block trueBranch, List<MebbeBranch> mebbeBranches, Block falseBranch) {
-        super(ParseType.Conditional);
+        super(ParseType.CONDITIONAL);
         this.condition = condition;
         this.trueBranch = trueBranch;
         this.mebbeBranches = mebbeBranches;

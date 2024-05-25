@@ -12,7 +12,7 @@ public class BooleanOperation extends ASTNode {
     private List<ASTNode> operands;
 
     public BooleanOperation(String operator, List<ASTNode> operands) {
-        super(ParseType.BooleanOperation);
+        super(ParseType.BOOLEAN_OPERATION);
         this.operator = operator;
         this.operands = operands;
     }

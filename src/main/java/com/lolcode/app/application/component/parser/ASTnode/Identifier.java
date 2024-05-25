@@ -9,7 +9,7 @@ public class Identifier extends ASTNode {
     private String name;
 
     public Identifier(String name) {
-        super(ParseType.Identifier);
+        super(ParseType.IDENTIFIER);
         this.name = name;
     }
 

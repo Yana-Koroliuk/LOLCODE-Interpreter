@@ -10,7 +10,7 @@ public class MebbeBranch extends ASTNode {
     private Block body;
 
     public MebbeBranch(ASTNode condition, Block body) {
-        super(ParseType.MebbeBranch);
+        super(ParseType.MEBBE_BRANCH);
         this.condition = condition;
         this.body = body;
     }

@@ -10,7 +10,7 @@ public class VariableDeclaration extends ASTNode {
     private ASTNode value;
 
     public VariableDeclaration(String name, ASTNode value) {
-        super(ParseType.VariableDeclaration);
+        super(ParseType.VARIABLE_DECLARATION);
         this.name = name;
         this.value = value;
     }

@@ -9,7 +9,7 @@ public class Return extends ASTNode {
     private ASTNode value;
 
     public Return(ASTNode value) {
-        super(ParseType.Return);
+        super(ParseType.RETURN);
         this.value = value;
     }
 

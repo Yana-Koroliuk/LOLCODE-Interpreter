@@ -10,7 +10,7 @@ public class Program extends ASTNode {
     private List<ASTNode> body;
 
     public Program(List<ASTNode> body) {
-        super(ParseType.Program);
+        super(ParseType.PROGRAM);
         this.body = body;
     }
 

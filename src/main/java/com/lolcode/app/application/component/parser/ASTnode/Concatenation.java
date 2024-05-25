@@ -11,7 +11,7 @@ public class Concatenation extends ASTNode {
     private List<ASTNode> values;
 
     public Concatenation(List<ASTNode> values) {
-        super(ParseType.Concatenation);
+        super(ParseType.CONCATENATION);
         this.values = values;
     }
 

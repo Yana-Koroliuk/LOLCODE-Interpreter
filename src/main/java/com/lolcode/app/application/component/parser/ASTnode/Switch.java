@@ -13,7 +13,7 @@ public class Switch extends ASTNode {
     private DefaultCase defaultCase;
 
     public Switch(ASTNode condition, List<Case> cases, DefaultCase defaultCase) {
-        super(ParseType.Switch);
+        super(ParseType.SWITCH);
         this.condition = condition;
         this.cases = cases;
         this.defaultCase = defaultCase;

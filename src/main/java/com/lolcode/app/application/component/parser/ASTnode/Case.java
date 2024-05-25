@@ -10,7 +10,7 @@ public class Case extends ASTNode {
     private Block body;
 
     public Case(ASTNode value, Block body) {
-        super(ParseType.Case);
+        super(ParseType.CASE);
         this.value = value;
         this.body = body;
     }

@@ -10,7 +10,7 @@ public class Literal extends ASTNode {
     private Object value;
 
     public Literal(String valueType, Object value) {
-        super(ParseType.Literal);
+        super(ParseType.LITERAL);
         this.valueType = valueType;
         this.value = value;
     }

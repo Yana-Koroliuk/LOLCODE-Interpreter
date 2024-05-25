@@ -9,7 +9,7 @@ public class Input extends ASTNode {
     private final String name;
 
     public Input(String name) {
-        super(ParseType.Input);
+        super(ParseType.INPUT);
         this.name = name;
     }
 

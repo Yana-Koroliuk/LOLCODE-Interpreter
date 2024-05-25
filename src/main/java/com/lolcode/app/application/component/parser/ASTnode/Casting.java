@@ -10,7 +10,7 @@ public class Casting extends ASTNode {
     private String castTo;
 
     public Casting(ASTNode value, String castTo) {
-        super(ParseType.Casting);
+        super(ParseType.CASTING);
         this.value = value;
         this.castTo = castTo;
     }

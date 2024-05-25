@@ -12,7 +12,7 @@ public class FunctionCall extends ASTNode {
     private List<ASTNode> args;
 
     public FunctionCall(String name, List<ASTNode> args) {
-        super(ParseType.FunctionCall);
+        super(ParseType.FUNCTION_CALL);
         this.name = name;
         this.args = args;
     }

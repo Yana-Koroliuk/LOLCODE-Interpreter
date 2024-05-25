@@ -15,7 +15,7 @@ public class IterativeLoop extends ASTNode {
     private List<ASTNode> body;
 
     public IterativeLoop(String label, String operation, ASTNode variable, ASTNode condition, List<ASTNode> body) {
-        super(ParseType.IterativeLoop);
+        super(ParseType.ITERATIVE_LOOP);
         this.label = label;
         this.operation = operation;
         this.variable = variable;
