@@ -77,6 +77,22 @@ public class Parser {
     private Print parsePrintStatement() {
         consume(Token.Type.KEYWORD);
         ASTNode value = parseExpression();
+
+        if (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD && tokens.get(currentTokenIndex).getValue().equals("AN")) {
+            List<ASTNode> values = new ArrayList<>();
+            values.add(value);
+
+            while (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD && tokens.get(currentTokenIndex).getValue().equals("AN")) {
+                consume(Token.Type.KEYWORD);
+                values.add(parseExpression());
+            }
+
+            if (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD && tokens.get(currentTokenIndex).getValue().equals("MKAY")) {
+                consume(Token.Type.KEYWORD);
+                value = new Concatenation(values);
+            }
+        }
+
         return new Print(value);
     }
 
@@ -128,6 +144,8 @@ public class Parser {
                     case "NOOB":
                         consume(Token.Type.KEYWORD);
                         return new Literal("NOOB", null);
+                    case "SMOOSH":
+                        return parseConcatenation();
                     default:
                         throw new IllegalArgumentException("Unknown keyword expression: " + currentToken.getValue());
                 }
