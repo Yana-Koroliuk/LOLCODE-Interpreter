@@ -9,11 +9,23 @@ import java.util.List;
 @Setter
 public class Loop extends ASTNode {
     private String label;
-    private List<ASTNode> body;
+    private String operation;
+    private ASTNode variable;
+    private ASTNode condition;
+    private Block body;
 
-    public Loop(String label, List<ASTNode> body) {
+    public Loop(String label, Block body) {
         super(ParseType.LOOP);
         this.label = label;
+        this.body = body;
+    }
+
+    public Loop(String label, String operation, ASTNode variable, ASTNode condition, Block body) {
+        super(ParseType.LOOP);
+        this.label = label;
+        this.operation = operation;
+        this.variable = variable;
+        this.condition = condition;
         this.body = body;
     }
 
@@ -21,6 +33,9 @@ public class Loop extends ASTNode {
     public String toString() {
         return "Loop{" +
                 "label='" + label + '\'' +
+                ", operation='" + operation + '\'' +
+                ", variable=" + variable +
+                ", condition=" + condition +
                 ", body=" + body +
                 '}';
     }
