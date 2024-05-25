@@ -55,6 +55,8 @@ public class Parser {
                 return parseConcatenation();
             case "GIMMEH":
                 return parseInputStatement();
+            case "MAEK":
+                return parseCasting();
             case "KTHXBYE":
                 return parseEndProgram();
             default:
@@ -154,12 +156,22 @@ public class Parser {
                         return new Literal("NOOB", null);
                     case "SMOOSH":
                         return parseConcatenation();
+                    case "MAEK":
+                        return parseCasting();
                     default:
                         throw new IllegalArgumentException("Unknown keyword expression: " + currentToken.getValue());
                 }
             default:
                 throw new IllegalArgumentException("Unknown expression: " + currentToken.getValue());
         }
+    }
+
+    private Casting parseCasting() {
+        consume(Token.Type.KEYWORD);
+        ASTNode value = parseExpression();
+        consume(Token.Type.KEYWORD);
+        Token castType = consume(Token.Type.KEYWORD);
+        return new Casting(value, castType.getValue());
     }
 
     private Concatenation parseConcatenation() {
