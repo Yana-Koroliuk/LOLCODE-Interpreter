@@ -1,7 +1,14 @@
 package com.lolcode.app.domain;
 
-public record Token(Type type, String value, int line) {
+import lombok.*;
 
+@Getter
+@AllArgsConstructor
+public class Token {
+    private final Type type;
+    private final String value;
+    private final int line;
+    
     public enum Type {
         KEYWORD, NUMBER, NEWLINE, IDENTIFIER, STRING
     }
