@@ -51,6 +51,8 @@ public class Parser {
                 return parseVariableDeclaration();
             case "VISIBLE":
                 return parsePrintStatement();
+            case "SMOOSH":
+                return parseConcatenation();
             case "KTHXBYE":
                 return parseEndProgram();
             default:
@@ -132,6 +134,21 @@ public class Parser {
             default:
                 throw new IllegalArgumentException("Unknown expression: " + currentToken.getValue());
         }
+    }
+
+    private Concatenation parseConcatenation() {
+        consume(Token.Type.KEYWORD);
+        List<ASTNode> values = new ArrayList<>();
+        values.add(parseExpression());
+
+        while (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD &&
+                tokens.get(currentTokenIndex).getValue().equals("AN")) {
+            consume(Token.Type.KEYWORD);
+            values.add(parseExpression());
+        }
+
+        consume(Token.Type.KEYWORD);
+        return new Concatenation(values);
     }
 
     private Token consume(Token.Type expectedType) {
