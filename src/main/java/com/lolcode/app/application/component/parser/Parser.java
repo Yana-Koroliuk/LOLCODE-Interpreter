@@ -49,6 +49,8 @@ public class Parser {
         switch (currentToken.getValue()) {
             case "I HAS A":
                 return parseVariableDeclaration();
+            case "VISIBLE":
+                return parsePrintStatement();
             case "KTHXBYE":
                 return parseEndProgram();
             default:
@@ -68,6 +70,12 @@ public class Parser {
         }
 
         return new VariableDeclaration(identifier.getValue(), value);
+    }
+
+    private Print parsePrintStatement() {
+        consume(Token.Type.KEYWORD);
+        ASTNode value = parseExpression();
+        return new Print(value);
     }
 
     private EndProgram parseEndProgram() {
