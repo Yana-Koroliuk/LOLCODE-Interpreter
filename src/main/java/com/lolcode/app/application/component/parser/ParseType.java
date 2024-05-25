@@ -1,0 +1,29 @@
+package com.lolcode.app.application.component.parser;
+
+public enum ParseType {
+    PROGRAM,
+    VARIABLE_DECLARATION,
+    EXPRESSION_STATEMENT,
+    ASSIGNMENT,
+    IDENTIFIER,
+    LITERAL,
+    INPUT,
+    PRINT,
+    CONCATENATION,
+    CASTING,
+    MATH_OPERATION,
+    BOOLEAN_OPERATION,
+    CONDITIONAL,
+    BLOCK,
+    MEBBE_BRANCH,
+    SWITCH,
+    CASE,
+    DEFAULT_CASE,
+    CONDITIONAL_BREAK,
+    LOOP,
+    ITERATIVE_LOOP,
+    FUNCTION_DECLARATION,
+    RETURN,
+    FUNCTION_CALL,
+    END_PROGRAM
+}
