@@ -55,6 +55,14 @@ public class Parser {
         parsers.put("MOD OF", () -> parseMathOperation("MOD OF"));
         parsers.put("BIGGR OF", () -> parseMathOperation("BIGGR OF"));
         parsers.put("SMALLR OF", () -> parseMathOperation("SMALLR OF"));
+        parsers.put("BOTH OF", () -> parseBooleanOperation("BOTH OF"));
+        parsers.put("EITHER OF", () -> parseBooleanOperation("EITHER OF"));
+        parsers.put("WON OF", () -> parseBooleanOperation("WON OF"));
+        parsers.put("NOT", () -> parseBooleanOperation("NOT"));
+        parsers.put("ALL OF", () -> parseBooleanOperation("ALL OF"));
+        parsers.put("ANY OF", () -> parseBooleanOperation("ANY OF"));
+        parsers.put("BOTH SAEM", () -> parseBooleanOperation("BOTH SAEM"));
+        parsers.put("DIFFRINT", () -> parseBooleanOperation("DIFFRINT"));
     }
 
     public SyntaxTree parse(Tokens tokens) {
@@ -222,6 +230,29 @@ public class Parser {
         operands.add(leftOperand);
         operands.add(rightOperand);
         return new MathOperation(operator, operands);
+    }
+
+    private BooleanOperation parseBooleanOperation(String operator) {
+        consume(Token.Type.KEYWORD);
+        List<ASTNode> operands = new ArrayList<>();
+        operands.add(parseExpression());
+
+        if (!operator.equals("NOT")) {
+            consume(Token.Type.KEYWORD);
+            operands.add(parseExpression());
+        }
+
+        while (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD &&
+                tokens.get(currentTokenIndex).getValue().equals("AN")) {
+            consume(Token.Type.KEYWORD);
+            operands.add(parseExpression());
+        }
+
+        if (operator.equals("ALL OF") || operator.equals("ANY OF")) {
+            consume(Token.Type.KEYWORD);
+        }
+
+        return new BooleanOperation(operator, operands);
     }
 
     private Token consume(Token.Type expectedType) {
