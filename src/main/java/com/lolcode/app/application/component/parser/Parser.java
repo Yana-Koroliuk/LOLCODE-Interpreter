@@ -52,7 +52,7 @@ public class Parser {
             case "KTHXBYE":
                 return parseEndProgram();
             default:
-                throw new IllegalArgumentException("Unknown statement: " + currentToken.getValue());
+                return parseExpressionOrAssignment();
         }
     }
 
@@ -73,6 +73,19 @@ public class Parser {
     private EndProgram parseEndProgram() {
         consume(Token.Type.KEYWORD);
         return new EndProgram();
+    }
+
+    private ASTNode parseExpressionOrAssignment() {
+        Token identifier = consume(Token.Type.IDENTIFIER);
+        Token nextToken = tokens.get(currentTokenIndex);
+
+        if (nextToken.getType() == Token.Type.KEYWORD && nextToken.getValue().equals("R")) {
+            consume(Token.Type.KEYWORD);
+            ASTNode value = parseExpression();
+            return new Assignment(identifier.getValue(), value);
+        } else {
+            return new ExpressionStatement(new Identifier(identifier.getValue()));
+        }
     }
 
     private ASTNode parseExpression() {
@@ -100,10 +113,10 @@ public class Parser {
                         consume(Token.Type.KEYWORD);
                         return new Literal("TROOF", true);
                     case "FAIL":
-                        consume(Token.Type.KEYWORD); // Consume "FAIL"
+                        consume(Token.Type.KEYWORD);
                         return new Literal("TROOF", false);
                     case "NOOB":
-                        consume(Token.Type.KEYWORD); // Consume "NOOB"
+                        consume(Token.Type.KEYWORD);
                         return new Literal("NOOB", null);
                     default:
                         throw new IllegalArgumentException("Unknown keyword expression: " + currentToken.getValue());
