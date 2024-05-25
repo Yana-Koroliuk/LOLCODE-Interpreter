@@ -6,12 +6,56 @@ import com.lolcode.app.domain.Token;
 import com.lolcode.app.domain.Tokens;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class Parser {
 
     private Tokens tokens;
     private int currentTokenIndex;
+
+    private final Map<String, Supplier<ASTNode>> statementParsers;
+    private final Map<String, Supplier<ASTNode>> expressionParsers;
+
+    public Parser() {
+        statementParsers = new HashMap<>();
+        expressionParsers = new HashMap<>();
+
+        statementParsers.put("I HAS A", this::parseVariableDeclaration);
+        statementParsers.put("VISIBLE", this::parsePrintStatement);
+        statementParsers.put("GIMMEH", this::parseInputStatement);
+        statementParsers.put("KTHXBYE", this::parseEndProgram);
+
+        addCommonParsers(statementParsers);
+        addCommonParsers(expressionParsers);
+
+        expressionParsers.put("WIN", () -> {
+            consume(Token.Type.KEYWORD);
+            return new Literal("TROOF", true);
+        });
+        expressionParsers.put("FAIL", () -> {
+            consume(Token.Type.KEYWORD);
+            return new Literal("TROOF", false);
+        });
+        expressionParsers.put("NOOB", () -> {
+            consume(Token.Type.KEYWORD);
+            return new Literal("NOOB", null);
+        });
+    }
+
+    private void addCommonParsers(Map<String, Supplier<ASTNode>> parsers) {
+        parsers.put("SMOOSH", this::parseConcatenation);
+        parsers.put("MAEK", this::parseCasting);
+        parsers.put("SUM OF", () -> parseMathOperation("SUM OF"));
+        parsers.put("DIFF OF", () -> parseMathOperation("DIFF OF"));
+        parsers.put("PRODUKT OF", () -> parseMathOperation("PRODUKT OF"));
+        parsers.put("QUOSHUNT OF", () -> parseMathOperation("QUOSHUNT OF"));
+        parsers.put("MOD OF", () -> parseMathOperation("MOD OF"));
+        parsers.put("BIGGR OF", () -> parseMathOperation("BIGGR OF"));
+        parsers.put("SMALLR OF", () -> parseMathOperation("SMALLR OF"));
+    }
 
     public SyntaxTree parse(Tokens tokens) {
         this.tokens = tokens;
@@ -46,21 +90,12 @@ public class Parser {
         }
 
         Token currentToken = tokens.get(currentTokenIndex);
-        switch (currentToken.getValue()) {
-            case "I HAS A":
-                return parseVariableDeclaration();
-            case "VISIBLE":
-                return parsePrintStatement();
-            case "SMOOSH":
-                return parseConcatenation();
-            case "GIMMEH":
-                return parseInputStatement();
-            case "MAEK":
-                return parseCasting();
-            case "KTHXBYE":
-                return parseEndProgram();
-            default:
-                return parseExpressionOrAssignment();
+        Supplier<ASTNode> parser = statementParsers.get(currentToken.getValue());
+
+        if (parser != null) {
+            return parser.get();
+        } else {
+            return parseExpressionOrAssignment();
         }
     }
 
@@ -144,22 +179,11 @@ public class Parser {
                     return new Literal("NUMBAR", Float.parseFloat(numberValue));
                 }
             case KEYWORD:
-                switch (currentToken.getValue()) {
-                    case "WIN":
-                        consume(Token.Type.KEYWORD);
-                        return new Literal("TROOF", true);
-                    case "FAIL":
-                        consume(Token.Type.KEYWORD);
-                        return new Literal("TROOF", false);
-                    case "NOOB":
-                        consume(Token.Type.KEYWORD);
-                        return new Literal("NOOB", null);
-                    case "SMOOSH":
-                        return parseConcatenation();
-                    case "MAEK":
-                        return parseCasting();
-                    default:
-                        throw new IllegalArgumentException("Unknown keyword expression: " + currentToken.getValue());
+                Supplier<ASTNode> parser = expressionParsers.get(currentToken.getValue());
+                if (parser != null) {
+                    return parser.get();
+                } else {
+                    throw new IllegalArgumentException("Unknown keyword expression: " + currentToken.getValue());
                 }
             default:
                 throw new IllegalArgumentException("Unknown expression: " + currentToken.getValue());
@@ -187,6 +211,17 @@ public class Parser {
 
         consume(Token.Type.KEYWORD);
         return new Concatenation(values);
+    }
+
+    private MathOperation parseMathOperation(String operator) {
+        consume(Token.Type.KEYWORD);
+        ASTNode leftOperand = parseExpression();
+        consume(Token.Type.KEYWORD);
+        ASTNode rightOperand = parseExpression();
+        List<ASTNode> operands = new ArrayList<>();
+        operands.add(leftOperand);
+        operands.add(rightOperand);
+        return new MathOperation(operator, operands);
     }
 
     private Token consume(Token.Type expectedType) {
