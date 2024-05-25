@@ -53,6 +53,8 @@ public class Parser {
                 return parsePrintStatement();
             case "SMOOSH":
                 return parseConcatenation();
+            case "GIMMEH":
+                return parseInputStatement();
             case "KTHXBYE":
                 return parseEndProgram();
             default:
@@ -99,6 +101,12 @@ public class Parser {
     private EndProgram parseEndProgram() {
         consume(Token.Type.KEYWORD);
         return new EndProgram();
+    }
+
+    private Input parseInputStatement() {
+        consume(Token.Type.KEYWORD);
+        Token identifier = consume(Token.Type.IDENTIFIER);
+        return new Input(identifier.getValue());
     }
 
     private ASTNode parseExpressionOrAssignment() {
