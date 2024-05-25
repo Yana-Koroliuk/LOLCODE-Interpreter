@@ -7,6 +7,7 @@ public enum ParseType {
     Assignment,
     Identifier,
     Literal,
+    Input,
     Print,
     Concatenation,
     Casting,
