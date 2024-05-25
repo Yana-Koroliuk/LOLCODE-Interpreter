@@ -2,7 +2,7 @@ package com.lolcode.app.application;
 
 import com.lolcode.app.application.component.Interpreter;
 import com.lolcode.app.application.component.Lexer;
-import com.lolcode.app.application.component.Parser;
+import com.lolcode.app.application.component.parser.Parser;
 import com.lolcode.app.domain.SourceCode;
 import com.lolcode.app.domain.SyntaxTree;
 import com.lolcode.app.domain.Tokens;
