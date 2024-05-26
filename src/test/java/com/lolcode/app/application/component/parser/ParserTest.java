@@ -220,4 +220,22 @@ public class ParserTest {
         assertEquals("YARN", literal.getValueType());
         assertEquals("\"THREE\"", literal.getValue());
     }
+
+    @Test
+    public void testInputStatement() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "GIMMEH", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 2));
+        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Input.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Input inputStmt = (Input) program.getBody().get(0);
+        assertEquals("INPUTVAR", inputStmt.getName());
+    }
 }
