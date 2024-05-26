@@ -238,4 +238,109 @@ public class ParserTest {
         Input inputStmt = (Input) program.getBody().get(0);
         assertEquals("INPUTVAR", inputStmt.getName());
     }
+
+    @Test
+    public void testPrintStatementWithLiteral() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 15));
+        tokens.add(4, new Token(Token.Type.STRING, "\"Hello, world!\"", 15));
+        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 15));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Print.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Print printStmt = (Print) program.getBody().get(0);
+        assertInstanceOf(Literal.class, printStmt.getValue());
+
+        Literal literal = (Literal) printStmt.getValue();
+        assertEquals("YARN", literal.getValueType());
+        assertEquals("\"Hello, world!\"", literal.getValue());
+    }
+
+    @Test
+    public void testPrintStatementWithIdentifier() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 16));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 16));
+        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 16));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Print.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Print printStmt = (Print) program.getBody().get(0);
+        assertInstanceOf(Identifier.class, printStmt.getValue());
+
+        Identifier identifier = (Identifier) printStmt.getValue();
+        assertEquals("INPUTVAR", identifier.getName());
+    }
+
+    @Test
+    public void testPrintStatementWithConcatenation() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 17));
+        tokens.add(4, new Token(Token.Type.STRING, "\"Var: \"", 17));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 17));
+        tokens.add(6, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 17));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 17));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Print.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Print printStmt = (Print) program.getBody().get(0);
+        assertInstanceOf(Concatenation.class, printStmt.getValue());
+
+        Concatenation concat = (Concatenation) printStmt.getValue();
+        assertEquals(2, concat.getValues().size());
+
+        Literal literal = (Literal) concat.getValues().get(0);
+        assertEquals("YARN", literal.getValueType());
+        assertEquals("\"Var: \"", literal.getValue());
+
+        Identifier identifier = (Identifier) concat.getValues().get(1);
+        assertEquals("INPUTVAR", identifier.getName());
+    }
+
+    @Test
+    public void testPrintStatementWithSmoosh() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 18));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "SMOOSH", 18));
+        tokens.add(5, new Token(Token.Type.STRING, "\"Var: \"", 18));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "AN", 18));
+        tokens.add(7, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 18));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "MKAY", 18));
+        tokens.add(9, new Token(Token.Type.NEWLINE, "\n", 18));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Print.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Print printStmt = (Print) program.getBody().get(0);
+        assertInstanceOf(Concatenation.class, printStmt.getValue());
+
+        Concatenation concat = (Concatenation) printStmt.getValue();
+        assertEquals(2, concat.getValues().size());
+
+        Literal literal = (Literal) concat.getValues().get(0);
+        assertEquals("YARN", literal.getValueType());
+        assertEquals("\"Var: \"", literal.getValue());
+
+        Identifier identifier = (Identifier) concat.getValues().get(1);
+        assertEquals("INPUTVAR", identifier.getName());
+    }
 }
