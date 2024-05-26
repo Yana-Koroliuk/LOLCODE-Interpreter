@@ -178,4 +178,46 @@ public class ParserTest {
         assertEquals("NUMBR", arg2.getValueType());
         assertEquals(10, arg2.getValue());
     }
+
+    @Test
+    public void testExpressionStatement() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 3));
+        tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 3));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(ExpressionStatement.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        ExpressionStatement exprStmt = (ExpressionStatement) program.getBody().get(0);
+        assertInstanceOf(Identifier.class, exprStmt.getExpression());
+        assertEquals("VAR", ((Identifier) exprStmt.getExpression()).getName());
+    }
+
+    @Test
+    public void testAssignment() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 4));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "R", 4));
+        tokens.add(5, new Token(Token.Type.STRING, "\"THREE\"", 4));
+        tokens.add(6, new Token(Token.Type.NEWLINE, "\n", 4));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Assignment.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Assignment assignment = (Assignment) program.getBody().get(0);
+        assertEquals("VAR", assignment.getVariable());
+        assertInstanceOf(Literal.class, assignment.getValue());
+
+        Literal literal = (Literal) assignment.getValue();
+        assertEquals("YARN", literal.getValueType());
+        assertEquals("\"THREE\"", literal.getValue());
+    }
 }
