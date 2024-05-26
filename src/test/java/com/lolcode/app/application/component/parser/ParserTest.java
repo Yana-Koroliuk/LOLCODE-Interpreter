@@ -75,14 +75,14 @@ public class ParserTest {
     @Test
     public void testVariableDeclarationWithCasting() {
         Tokens tokens = createBaseTokens();
-        tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 24));
-        tokens.add(4, new Token(Token.Type.IDENTIFIER, "NUMVAL", 24));
-        tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 24));
-        tokens.add(6, new Token(Token.Type.KEYWORD, "MAEK", 24));
-        tokens.add(7, new Token(Token.Type.IDENTIFIER, "STRVAL", 24));
-        tokens.add(8, new Token(Token.Type.KEYWORD, "A", 24));
-        tokens.add(9, new Token(Token.Type.KEYWORD, "NUMBR", 24));
-        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 24));
+        tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "NUMVAL", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "MAEK", 2));
+        tokens.add(7, new Token(Token.Type.IDENTIFIER, "STRVAL", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "A", 2));
+        tokens.add(9, new Token(Token.Type.KEYWORD, "NUMBR", 2));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -105,14 +105,14 @@ public class ParserTest {
     @Test
     public void testVariableDeclarationWithBooleanOperation() {
         Tokens tokens = createBaseTokens();
-        tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 57));
-        tokens.add(4, new Token(Token.Type.IDENTIFIER, "BOOL1", 57));
-        tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 57));
-        tokens.add(6, new Token(Token.Type.KEYWORD, "BOTH SAEM", 57));
-        tokens.add(7, new Token(Token.Type.IDENTIFIER, "NUM1", 57));
-        tokens.add(8, new Token(Token.Type.KEYWORD, "AN", 57));
-        tokens.add(9, new Token(Token.Type.NUMBER, "10", 57));
-        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 57));
+        tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "BOOL1", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "BOTH SAEM", 2));
+        tokens.add(7, new Token(Token.Type.IDENTIFIER, "NUM1", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(9, new Token(Token.Type.NUMBER, "10", 2));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -182,8 +182,8 @@ public class ParserTest {
     @Test
     public void testExpressionStatement() {
         Tokens tokens = createBaseTokens();
-        tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 3));
-        tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 3));
+        tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 2));
+        tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -200,10 +200,10 @@ public class ParserTest {
     @Test
     public void testAssignment() {
         Tokens tokens = createBaseTokens();
-        tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 4));
-        tokens.add(4, new Token(Token.Type.KEYWORD, "R", 4));
-        tokens.add(5, new Token(Token.Type.STRING, "\"THREE\"", 4));
-        tokens.add(6, new Token(Token.Type.NEWLINE, "\n", 4));
+        tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "R", 2));
+        tokens.add(5, new Token(Token.Type.STRING, "\"THREE\"", 2));
+        tokens.add(6, new Token(Token.Type.NEWLINE, "\n", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -242,9 +242,9 @@ public class ParserTest {
     @Test
     public void testPrintStatementWithLiteral() {
         Tokens tokens = createBaseTokens();
-        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 15));
-        tokens.add(4, new Token(Token.Type.STRING, "\"Hello, world!\"", 15));
-        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 15));
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(4, new Token(Token.Type.STRING, "\"Hello, world!\"", 2));
+        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -264,9 +264,9 @@ public class ParserTest {
     @Test
     public void testPrintStatementWithIdentifier() {
         Tokens tokens = createBaseTokens();
-        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 16));
-        tokens.add(4, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 16));
-        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 16));
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 2));
+        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -285,11 +285,11 @@ public class ParserTest {
     @Test
     public void testPrintStatementWithConcatenation() {
         Tokens tokens = createBaseTokens();
-        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 17));
-        tokens.add(4, new Token(Token.Type.STRING, "\"Var: \"", 17));
-        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 17));
-        tokens.add(6, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 17));
-        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 17));
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(4, new Token(Token.Type.STRING, "\"Var: \"", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -315,13 +315,13 @@ public class ParserTest {
     @Test
     public void testPrintStatementWithSmoosh() {
         Tokens tokens = createBaseTokens();
-        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 18));
-        tokens.add(4, new Token(Token.Type.KEYWORD, "SMOOSH", 18));
-        tokens.add(5, new Token(Token.Type.STRING, "\"Var: \"", 18));
-        tokens.add(6, new Token(Token.Type.KEYWORD, "AN", 18));
-        tokens.add(7, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 18));
-        tokens.add(8, new Token(Token.Type.KEYWORD, "MKAY", 18));
-        tokens.add(9, new Token(Token.Type.NEWLINE, "\n", 18));
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "SMOOSH", 2));
+        tokens.add(5, new Token(Token.Type.STRING, "\"Var: \"", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(7, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "MKAY", 2));
+        tokens.add(9, new Token(Token.Type.NEWLINE, "\n", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -341,6 +341,69 @@ public class ParserTest {
         assertEquals("\"Var: \"", literal.getValue());
 
         Identifier identifier = (Identifier) concat.getValues().get(1);
+        assertEquals("INPUTVAR", identifier.getName());
+    }
+
+    @Test
+    public void testConcatenationWithLiterals() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "SMOOSH", 2));
+        tokens.add(4, new Token(Token.Type.STRING, "\"Hello\"", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.STRING, "\"World\"", 2));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "MKAY", 2));
+        tokens.add(8, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Concatenation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Concatenation concat = (Concatenation) program.getBody().get(0);
+        assertEquals(2, concat.getValues().size());
+
+        Literal literal1 = (Literal) concat.getValues().get(0);
+        assertEquals("YARN", literal1.getValueType());
+        assertEquals("\"Hello\"", literal1.getValue());
+
+        Literal literal2 = (Literal) concat.getValues().get(1);
+        assertEquals("YARN", literal2.getValueType());
+        assertEquals("\"World\"", literal2.getValue());
+    }
+
+    @Test
+    public void testConcatenationWithLiteralsAndIdentifier() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "SMOOSH", 2));
+        tokens.add(4, new Token(Token.Type.STRING, "\"SHello\"", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.STRING, "\" \"", 2));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(8, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 2));
+        tokens.add(9, new Token(Token.Type.KEYWORD, "MKAY", 2));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Concatenation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Concatenation concat = (Concatenation) program.getBody().get(0);
+        assertEquals(3, concat.getValues().size());
+
+        Literal literal1 = (Literal) concat.getValues().get(0);
+        assertEquals("YARN", literal1.getValueType());
+        assertEquals("\"SHello\"", literal1.getValue());
+
+        Literal literal2 = (Literal) concat.getValues().get(1);
+        assertEquals("YARN", literal2.getValueType());
+        assertEquals("\" \"", literal2.getValue());
+
+        Identifier identifier = (Identifier) concat.getValues().get(2);
         assertEquals("INPUTVAR", identifier.getName());
     }
 }
