@@ -10,9 +10,9 @@ import java.util.List;
 public class FunctionDeclaration extends ASTNode {
     private String name;
     private List<String> params;
-    private List<ASTNode> body;
+    private Block body;
 
-    public FunctionDeclaration(String name, List<String> params, List<ASTNode> body) {
+    public FunctionDeclaration(String name, List<String> params, Block body) {
         super(ParseType.FUNCTION_DECLARATION);
         this.name = name;
         this.params = params;
