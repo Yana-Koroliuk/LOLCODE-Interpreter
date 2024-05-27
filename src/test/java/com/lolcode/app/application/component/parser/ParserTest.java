@@ -879,5 +879,137 @@ public class ParserTest {
         assertEquals("VAR", ((Identifier) printStmt.getValue()).getName());
     }
 
+    @Test
+    public void testFunctionDeclaration() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "HOW IZ I", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "FUNC", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "YR", 2));
+        tokens.add(6, new Token(Token.Type.IDENTIFIER, "ARG1", 2));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "YR", 2));
+        tokens.add(9, new Token(Token.Type.IDENTIFIER, "ARG2", 2));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(12, new Token(Token.Type.IDENTIFIER, "ARG1", 2));
+        tokens.add(13, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(14, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(15, new Token(Token.Type.IDENTIFIER, "ARG2", 2));
+        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(17, new Token(Token.Type.KEYWORD, "IF U SAY SO", 2));
+        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(FunctionDeclaration.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        FunctionDeclaration functionDecl = (FunctionDeclaration) program.getBody().get(0);
+        assertEquals("FUNC", functionDecl.getName());
+        assertEquals(2, functionDecl.getParams().size());
+        assertEquals("ARG1", functionDecl.getParams().get(0));
+        assertEquals("ARG2", functionDecl.getParams().get(1));
+
+        Block body = functionDecl.getBody();
+        assertEquals(2, body.getBody().size());
+        assertInstanceOf(Print.class, body.getBody().get(0));
+        assertInstanceOf(Print.class, body.getBody().get(1));
+
+        Print printStmt1 = (Print) body.getBody().get(0);
+        assertInstanceOf(Identifier.class, printStmt1.getValue());
+        assertEquals("ARG1", ((Identifier) printStmt1.getValue()).getName());
+
+        Print printStmt2 = (Print) body.getBody().get(1);
+        assertInstanceOf(Identifier.class, printStmt2.getValue());
+        assertEquals("ARG2", ((Identifier) printStmt2.getValue()).getName());
+    }
+
+    @Test
+    public void testFunctionWithReturn() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "HOW IZ I", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "ADD", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "YR", 2));
+        tokens.add(6, new Token(Token.Type.IDENTIFIER, "A1", 2));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "YR", 2));
+        tokens.add(9, new Token(Token.Type.IDENTIFIER, "B", 2));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "FOUND YR", 2));
+        tokens.add(12, new Token(Token.Type.KEYWORD, "SUM OF", 2));
+        tokens.add(13, new Token(Token.Type.IDENTIFIER, "A1", 2));
+        tokens.add(14, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(15, new Token(Token.Type.IDENTIFIER, "B", 2));
+        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(17, new Token(Token.Type.KEYWORD, "IF U SAY SO", 2));
+        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(FunctionDeclaration.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        FunctionDeclaration functionDecl = (FunctionDeclaration) program.getBody().get(0);
+        assertEquals("ADD", functionDecl.getName());
+        assertEquals(2, functionDecl.getParams().size());
+        assertEquals("A1", functionDecl.getParams().get(0));
+        assertEquals("B", functionDecl.getParams().get(1));
+
+        Block body = functionDecl.getBody();
+        assertEquals(1, body.getBody().size());
+        assertInstanceOf(Return.class, body.getBody().get(0));
+
+        Return returnStmt = (Return) body.getBody().get(0);
+        assertInstanceOf(MathOperation.class, returnStmt.getValue());
+
+        MathOperation mathOp = (MathOperation) returnStmt.getValue();
+        assertEquals("SUM OF", mathOp.getOperator());
+        assertEquals(2, mathOp.getOperands().size());
+
+        Identifier operand1 = (Identifier) mathOp.getOperands().get(0);
+        assertEquals("A1", operand1.getName());
+
+        Identifier operand2 = (Identifier) mathOp.getOperands().get(1);
+        assertEquals("B", operand2.getName());
+    }
+
+    @Test
+    public void testFunctionCall() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "I IZ", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "FUNC", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "YR", 2));
+        tokens.add(6, new Token(Token.Type.STRING, "\"Hello\"", 2));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "YR", 2));
+        tokens.add(9, new Token(Token.Type.STRING, "\"World\"", 2));
+        tokens.add(10, new Token(Token.Type.KEYWORD, "MKAY", 2));
+        tokens.add(11, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(FunctionCall.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        FunctionCall functionCall = (FunctionCall) program.getBody().get(0);
+        assertEquals("FUNC", functionCall.getName());
+        assertEquals(2, functionCall.getArgs().size());
+
+        Literal arg1 = (Literal) functionCall.getArgs().get(0);
+        assertEquals("YARN", arg1.getValueType());
+        assertEquals("\"Hello\"", arg1.getValue());
+
+        Literal arg2 = (Literal) functionCall.getArgs().get(1);
+        assertEquals("YARN", arg2.getValueType());
+        assertEquals("\"World\"", arg2.getValue());
+    }
+
+
 }
 
