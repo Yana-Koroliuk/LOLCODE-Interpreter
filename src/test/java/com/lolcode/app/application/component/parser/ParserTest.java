@@ -782,5 +782,102 @@ public class ParserTest {
         assertEquals("\"FISH IS TRANSPARENT\"", defaultPrintValue.getValue());
     }
 
+    @Test
+    public void testSimpleLoopStatement() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "IM IN YR", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "LOOP", 2));
+        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(7, new Token(Token.Type.STRING, "\"Looping...\"", 2));
+        tokens.add(8, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(9, new Token(Token.Type.KEYWORD, "GTFO", 2));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "IM OUTTA YR", 2));
+        tokens.add(12, new Token(Token.Type.IDENTIFIER, "LOOP", 2));
+        tokens.add(13, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Loop.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Loop loop = (Loop) program.getBody().get(0);
+        assertEquals("LOOP", loop.getLabel());
+        assertNull(loop.getOperation());
+        assertNull(loop.getVariable());
+        assertNull(loop.getCondition());
+
+        Block body = loop.getBody();
+        assertEquals(2, body.getBody().size());
+        assertInstanceOf(Print.class, body.getBody().get(0));
+        assertInstanceOf(ConditionalBreak.class, body.getBody().get(1));
+
+        Print printStmt = (Print) body.getBody().get(0);
+        assertInstanceOf(Literal.class, printStmt.getValue());
+        Literal literal = (Literal) printStmt.getValue();
+        assertEquals("YARN", literal.getValueType());
+        assertEquals("\"Looping...\"", literal.getValue());
+
+        ConditionalBreak breakStmt = (ConditionalBreak) body.getBody().get(1);
+        assertInstanceOf(Identifier.class, breakStmt.getCondition());
+        assertEquals("IT", ((Identifier) breakStmt.getCondition()).getName());
+    }
+
+    @Test
+    public void testConditionalLoopStatement() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "IM IN YR", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "LOOP", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "UPPIN", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "YR", 2));
+        tokens.add(7, new Token(Token.Type.IDENTIFIER, "VAR", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "TIL", 2));
+        tokens.add(9, new Token(Token.Type.KEYWORD, "BOTH SAEM", 2));
+        tokens.add(10, new Token(Token.Type.IDENTIFIER, "VAR", 2));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(12, new Token(Token.Type.NUMBER, "10", 2));
+        tokens.add(13, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(14, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(15, new Token(Token.Type.IDENTIFIER, "VAR", 2));
+        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(17, new Token(Token.Type.KEYWORD, "IM OUTTA YR", 2));
+        tokens.add(18, new Token(Token.Type.IDENTIFIER, "LOOP", 2));
+        tokens.add(19, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Loop.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Loop loop = (Loop) program.getBody().get(0);
+        assertEquals("LOOP", loop.getLabel());
+        assertEquals("UPPIN", loop.getOperation());
+        assertNotNull(loop.getVariable());
+        assertEquals("VAR", ((Identifier) loop.getVariable()).getName());
+        assertNotNull(loop.getCondition());
+
+        BooleanOperation condition = (BooleanOperation) loop.getCondition();
+        assertEquals("BOTH SAEM", condition.getOperator());
+        assertEquals(2, condition.getOperands().size());
+        Identifier operand1 = (Identifier) condition.getOperands().get(0);
+        assertEquals("VAR", operand1.getName());
+        Literal operand2 = (Literal) condition.getOperands().get(1);
+        assertEquals("NUMBR", operand2.getValueType());
+        assertEquals(10, operand2.getValue());
+
+        Block body = loop.getBody();
+        assertEquals(1, body.getBody().size());
+        assertInstanceOf(Print.class, body.getBody().get(0));
+
+        Print printStmt = (Print) body.getBody().get(0);
+        assertInstanceOf(Identifier.class, printStmt.getValue());
+        assertEquals("VAR", ((Identifier) printStmt.getValue()).getName());
+    }
+
 }
 
