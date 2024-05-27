@@ -29,6 +29,9 @@ public class Parser {
         statementParsers.put("O RLY?", this::parseConditional);
         statementParsers.put("WTF?", this::parseSwitch);
         statementParsers.put("GTFO", this::parseConditionalBreak);
+        statementParsers.put("IM IN YR", this::parseLoop);
+        statementParsers.put("IM OUTTA YR", this::parseLoopExit);
+        statementParsers.put("HOW IZ I", this::parseFunctionDeclaration);
         statementParsers.put("KTHXBYE", this::parseEndProgram);
 
         addCommonParsers(statementParsers);
@@ -51,6 +54,7 @@ public class Parser {
     private void addCommonParsers(Map<String, Supplier<ASTNode>> parsers) {
         parsers.put("SMOOSH", this::parseConcatenation);
         parsers.put("MAEK", this::parseCasting);
+        parsers.put("I IZ", this::parseFunctionCall);
         parsers.put("SUM OF", () -> parseMathOperation("SUM OF"));
         parsers.put("DIFF OF", () -> parseMathOperation("DIFF OF"));
         parsers.put("PRODUKT OF", () -> parseMathOperation("PRODUKT OF"));
@@ -137,10 +141,7 @@ public class Parser {
                 values.add(parseExpression());
             }
 
-            if (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD && tokens.get(currentTokenIndex).getValue().equals("MKAY")) {
-                consume(Token.Type.KEYWORD);
-                value = new Concatenation(values);
-            }
+            value = new Concatenation(values);
         }
 
         return new Print(value);
@@ -325,6 +326,87 @@ public class Parser {
         return new ConditionalBreak(new Identifier("IT"));
     }
 
+    private Loop parseLoop() {
+        consume(Token.Type.KEYWORD);
+        Token label = consume(Token.Type.IDENTIFIER);
+        String operation = null;
+        ASTNode variable = null;
+        ASTNode condition = null;
+
+        if (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD) {
+            operation = consume(Token.Type.KEYWORD).getValue();
+            consume(Token.Type.KEYWORD);
+            variable = parseExpression();
+            consume(Token.Type.KEYWORD);
+            condition = parseExpression();
+        }
+
+        consumeNewline();
+        Block body = parseBlock();
+        return new Loop(label.getValue(), operation, variable, condition, body);
+    }
+
+    private ASTNode parseLoopExit() {
+        consume(Token.Type.KEYWORD);
+        consume(Token.Type.IDENTIFIER);
+        consumeNewline();
+        return null;
+    }
+
+    private FunctionDeclaration parseFunctionDeclaration() {
+        consume(Token.Type.KEYWORD);
+        Token functionName = consume(Token.Type.IDENTIFIER);
+        List<String> params = new ArrayList<>();
+
+        while (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD &&
+                tokens.get(currentTokenIndex).getValue().equals("YR")) {
+            consume(Token.Type.KEYWORD);
+            Token param = consume(Token.Type.IDENTIFIER);
+            params.add(param.getValue());
+
+            if (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD &&
+                    tokens.get(currentTokenIndex).getValue().equals("AN")) {
+                consume(Token.Type.KEYWORD);
+            }
+        }
+
+        consumeNewline();
+        Block body = parseBlock();
+        consume(Token.Type.KEYWORD);
+        consumeNewline();
+
+        return new FunctionDeclaration(functionName.getValue(), params, body);
+    }
+
+    private FunctionCall parseFunctionCall() {
+        consume(Token.Type.KEYWORD);
+        Token functionName = consume(Token.Type.IDENTIFIER);
+        List<ASTNode> args = new ArrayList<>();
+
+        while (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD &&
+                tokens.get(currentTokenIndex).getValue().equals("YR")) {
+            consume(Token.Type.KEYWORD);
+            args.add(parseExpression());
+
+            if (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD &&
+                    tokens.get(currentTokenIndex).getValue().equals("AN")) {
+                consume(Token.Type.KEYWORD);
+            }
+        }
+
+        consume(Token.Type.KEYWORD);
+        consumeNewline();
+
+        return new FunctionCall(functionName.getValue(), args);
+    }
+
+    private Return parseReturn() {
+        consume(Token.Type.KEYWORD);
+        ASTNode value = parseExpression();
+        consumeNewline();
+        return new Return(value);
+    }
+
     private Block parseBlock() {
         List<ASTNode> body = new ArrayList<>();
         while (tokens.get(currentTokenIndex).getType() == Token.Type.NEWLINE ||
@@ -333,14 +415,21 @@ public class Parser {
                                 !tokens.get(currentTokenIndex).getValue().equals("MEBBE") &&
                                 !tokens.get(currentTokenIndex).getValue().equals("NO WAI") &&
                                 !tokens.get(currentTokenIndex).getValue().equals("OMG") &&
-                                !tokens.get(currentTokenIndex).getValue().equals("OMGWTF")))) {
+                                !tokens.get(currentTokenIndex).getValue().equals("OMGWTF") &&
+                                !tokens.get(currentTokenIndex).getValue().equals("IM OUTTA YR") &&
+                                !tokens.get(currentTokenIndex).getValue().equals("IF U SAY SO")))) {
             if (tokens.get(currentTokenIndex).getType() == Token.Type.NEWLINE) {
                 currentTokenIndex++;
                 continue;
             }
-            ASTNode statement = parseStatement();
-            if (statement != null) {
-                body.add(statement);
+            if (tokens.get(currentTokenIndex).getType() == Token.Type.KEYWORD &&
+                    tokens.get(currentTokenIndex).getValue().equals("FOUND YR")) {
+                body.add(parseReturn());
+            } else {
+                ASTNode statement = parseStatement();
+                if (statement != null) {
+                    body.add(statement);
+                }
             }
         }
         return new Block(body);
