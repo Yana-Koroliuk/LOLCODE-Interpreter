@@ -627,4 +627,82 @@ public class ParserTest {
         assertEquals("NUMBR", operand2.getValueType());
         assertEquals(3, operand2.getValue());
     }
+
+    @Test
+    public void testConditionalStatement() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "O RLY?", 2));
+        tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "YA RLY", 2));
+        tokens.add(6, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(8, new Token(Token.Type.STRING, "\"NUM is 10\"", 2));
+        tokens.add(9, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(10, new Token(Token.Type.KEYWORD, "MEBBE", 2));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "BOTH SAEM", 2));
+        tokens.add(12, new Token(Token.Type.IDENTIFIER, "NUM0", 2));
+        tokens.add(13, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(14, new Token(Token.Type.NUMBER, "15", 2));
+        tokens.add(15, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(16, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(17, new Token(Token.Type.STRING, "\"NUM is 15\"", 2));
+        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(19, new Token(Token.Type.KEYWORD, "NO WAI", 2));
+        tokens.add(20, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(21, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(22, new Token(Token.Type.STRING, "\"NUM is something else\"", 2));
+        tokens.add(23, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(24, new Token(Token.Type.KEYWORD, "OIC", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Conditional.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Conditional conditional = (Conditional) program.getBody().get(0);
+        assertInstanceOf(Identifier.class, conditional.getCondition());
+        assertEquals("IT", ((Identifier) conditional.getCondition()).getName());
+
+        Block trueBranch = conditional.getTrueBranch();
+        assertEquals(1, trueBranch.getBody().size());
+        assertInstanceOf(Print.class, trueBranch.getBody().get(0));
+        Print truePrint = (Print) trueBranch.getBody().get(0);
+        assertInstanceOf(Literal.class, truePrint.getValue());
+        Literal trueLiteral = (Literal) truePrint.getValue();
+        assertEquals("YARN", trueLiteral.getValueType());
+        assertEquals("\"NUM is 10\"", trueLiteral.getValue());
+
+        assertEquals(1, conditional.getMebbeBranches().size());
+        MebbeBranch mebbeBranch = conditional.getMebbeBranches().get(0);
+        assertInstanceOf(BooleanOperation.class, mebbeBranch.getCondition());
+        BooleanOperation mebbeCondition = (BooleanOperation) mebbeBranch.getCondition();
+        assertEquals("BOTH SAEM", mebbeCondition.getOperator());
+        assertEquals(2, mebbeCondition.getOperands().size());
+        Identifier mebbeOperand1 = (Identifier) mebbeCondition.getOperands().get(0);
+        assertEquals("NUM0", mebbeOperand1.getName());
+        Literal mebbeOperand2 = (Literal) mebbeCondition.getOperands().get(1);
+        assertEquals("NUMBR", mebbeOperand2.getValueType());
+        assertEquals(15, mebbeOperand2.getValue());
+
+        Block mebbeBody = mebbeBranch.getBody();
+        assertEquals(1, mebbeBody.getBody().size());
+        assertInstanceOf(Print.class, mebbeBody.getBody().get(0));
+        Print mebbePrint = (Print) mebbeBody.getBody().get(0);
+        assertInstanceOf(Literal.class, mebbePrint.getValue());
+        Literal mebbeLiteral = (Literal) mebbePrint.getValue();
+        assertEquals("YARN", mebbeLiteral.getValueType());
+        assertEquals("\"NUM is 15\"", mebbeLiteral.getValue());
+
+        Block falseBranch = conditional.getFalseBranch();
+        assertEquals(1, falseBranch.getBody().size());
+        assertInstanceOf(Print.class, falseBranch.getBody().get(0));
+        Print falsePrint = (Print) falseBranch.getBody().get(0);
+        assertInstanceOf(Literal.class, falsePrint.getValue());
+        Literal falseLiteral = (Literal) falsePrint.getValue();
+        assertEquals("YARN", falseLiteral.getValueType());
+        assertEquals("\"NUM is something else\"", falseLiteral.getValue());
+    }
 }
+
