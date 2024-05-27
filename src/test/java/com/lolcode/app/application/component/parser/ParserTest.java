@@ -516,4 +516,115 @@ public class ParserTest {
         Identifier operand2 = (Identifier) mathOp.getOperands().get(1);
         assertEquals("INTEGER1", operand2.getName());
     }
+
+    @Test
+    public void testBooleanOperationWithLiterals() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "BOTH OF", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "WIN", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "FAIL", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(BooleanOperation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        BooleanOperation boolOp = (BooleanOperation) program.getBody().get(0);
+        assertEquals("BOTH OF", boolOp.getOperator());
+        assertEquals(2, boolOp.getOperands().size());
+
+        Literal operand1 = (Literal) boolOp.getOperands().get(0);
+        assertEquals("TROOF", operand1.getValueType());
+        assertEquals(true, operand1.getValue());
+
+        Literal operand2 = (Literal) boolOp.getOperands().get(1);
+        assertEquals("TROOF", operand2.getValueType());
+        assertEquals(false, operand2.getValue());
+    }
+
+    @Test
+    public void testBooleanOperationWithNot() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "NOT", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "WIN", 2));
+        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(BooleanOperation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        BooleanOperation boolOp = (BooleanOperation) program.getBody().get(0);
+        assertEquals("NOT", boolOp.getOperator());
+        assertEquals(1, boolOp.getOperands().size());
+
+        Literal operand = (Literal) boolOp.getOperands().get(0);
+        assertEquals("TROOF", operand.getValueType());
+        assertEquals(true, operand.getValue());
+    }
+
+    @Test
+    public void testBooleanOperationWithAllOf() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "ALL OF", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "WIN", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "FAIL", 2));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "MKAY", 2));
+        tokens.add(8, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(BooleanOperation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        BooleanOperation boolOp = (BooleanOperation) program.getBody().get(0);
+        assertEquals("ALL OF", boolOp.getOperator());
+        assertEquals(2, boolOp.getOperands().size());
+
+        Literal operand1 = (Literal) boolOp.getOperands().get(0);
+        assertEquals("TROOF", operand1.getValueType());
+        assertEquals(true, operand1.getValue());
+
+        Literal operand2 = (Literal) boolOp.getOperands().get(1);
+        assertEquals("TROOF", operand2.getValueType());
+        assertEquals(false, operand2.getValue());
+    }
+
+    @Test
+    public void testBooleanOperationWithBothSaem() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "BOTH SAEM", 2));
+        tokens.add(4, new Token(Token.Type.NUMBER, "3", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.NUMBER, "3", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(BooleanOperation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        BooleanOperation boolOp = (BooleanOperation) program.getBody().get(0);
+        assertEquals("BOTH SAEM", boolOp.getOperator());
+        assertEquals(2, boolOp.getOperands().size());
+
+        Literal operand1 = (Literal) boolOp.getOperands().get(0);
+        assertEquals("NUMBR", operand1.getValueType());
+        assertEquals(3, operand1.getValue());
+
+        Literal operand2 = (Literal) boolOp.getOperands().get(1);
+        assertEquals("NUMBR", operand2.getValueType());
+        assertEquals(3, operand2.getValue());
+    }
 }
