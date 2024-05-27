@@ -406,4 +406,30 @@ public class ParserTest {
         Identifier identifier = (Identifier) concat.getValues().get(2);
         assertEquals("INPUTVAR", identifier.getName());
     }
+
+    @Test
+    public void testCastingWithLiteral() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "MAEK", 2));
+        tokens.add(4, new Token(Token.Type.STRING, "\"123\"", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "A", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "NUMBR", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Casting.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Casting casting = (Casting) program.getBody().get(0);
+        assertInstanceOf(Literal.class, casting.getValue());
+
+        Literal literal = (Literal) casting.getValue();
+        assertEquals("YARN", literal.getValueType());
+        assertEquals("\"123\"", literal.getValue());
+
+        assertEquals("NUMBR", casting.getCastTo());
+    }
 }
