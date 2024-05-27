@@ -432,4 +432,88 @@ public class ParserTest {
 
         assertEquals("NUMBR", casting.getCastTo());
     }
+
+    @Test
+    public void testMathOperationWithLiterals() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "SUM OF", 2));
+        tokens.add(4, new Token(Token.Type.NUMBER, "3", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.NUMBER, "5", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(MathOperation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        MathOperation mathOp = (MathOperation) program.getBody().get(0);
+        assertEquals("SUM OF", mathOp.getOperator());
+        assertEquals(2, mathOp.getOperands().size());
+
+        Literal operand1 = (Literal) mathOp.getOperands().get(0);
+        assertEquals("NUMBR", operand1.getValueType());
+        assertEquals(3, operand1.getValue());
+
+        Literal operand2 = (Literal) mathOp.getOperands().get(1);
+        assertEquals("NUMBR", operand2.getValueType());
+        assertEquals(5, operand2.getValue());
+    }
+
+    @Test
+    public void testMathOperationWithLiteralAndIdentifier() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "SUM OF", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "NUM", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.NUMBER, "5", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(MathOperation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        MathOperation mathOp = (MathOperation) program.getBody().get(0);
+        assertEquals("SUM OF", mathOp.getOperator());
+        assertEquals(2, mathOp.getOperands().size());
+
+        Identifier operand1 = (Identifier) mathOp.getOperands().get(0);
+        assertEquals("NUM", operand1.getName());
+
+        Literal operand2 = (Literal) mathOp.getOperands().get(1);
+        assertEquals("NUMBR", operand2.getValueType());
+        assertEquals(5, operand2.getValue());
+    }
+
+    @Test
+    public void testMathOperationWithIdentifiers() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "SUM OF", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "NUM", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.IDENTIFIER, "INTEGER1", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(MathOperation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        MathOperation mathOp = (MathOperation) program.getBody().get(0);
+        assertEquals("SUM OF", mathOp.getOperator());
+        assertEquals(2, mathOp.getOperands().size());
+
+        Identifier operand1 = (Identifier) mathOp.getOperands().get(0);
+        assertEquals("NUM", operand1.getName());
+
+        Identifier operand2 = (Identifier) mathOp.getOperands().get(1);
+        assertEquals("INTEGER1", operand2.getName());
+    }
 }
