@@ -12,24 +12,20 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ParserTest {
 
     private Parser parser;
+    private Tokens tokens;
 
     @BeforeEach
     public void setUp() {
         parser = new Parser();
-    }
-
-    private Tokens createBaseTokens() {
-        Tokens tokens = new Tokens();
+        tokens = new Tokens();
         tokens.add(new Token(Token.Type.KEYWORD, "HAI", 1));
         tokens.add(new Token(Token.Type.NUMBER, "1.2", 1));
         tokens.add(new Token(Token.Type.NEWLINE, "\n", 1));
-        tokens.add(new Token(Token.Type.KEYWORD, "KTHXBYE", 3));
-        return tokens;
+        tokens.add(new Token(Token.Type.KEYWORD, "KTHXBYE", 10));
     }
 
     @Test
     public void testVariableDeclarationWithoutValue() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "VAR", 2));
         tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
@@ -48,7 +44,6 @@ public class ParserTest {
 
     @Test
     public void testVariableDeclarationWithLiteralValue() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "STR", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 2));
@@ -73,8 +68,7 @@ public class ParserTest {
     }
 
     @Test
-    public void testParseExpressionWithFloatNumber() {
-        Tokens tokens = createBaseTokens();
+    public void testParseVariableDeclarationWithFloatNumber() {
         tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "FLT", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 2));
@@ -98,10 +92,8 @@ public class ParserTest {
         assertEquals(3.14f, literal.getValue());
     }
 
-
     @Test
     public void testVariableDeclarationWithCasting() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "NUMVAL", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 2));
@@ -131,7 +123,6 @@ public class ParserTest {
 
     @Test
     public void testVariableDeclarationWithBooleanOperation() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "BOOL1", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 2));
@@ -167,7 +158,6 @@ public class ParserTest {
 
     @Test
     public void testVariableDeclarationWithFunctionCall() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "RESULT", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 2));
@@ -208,7 +198,6 @@ public class ParserTest {
 
     @Test
     public void testExpressionStatement() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 2));
         tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 2));
 
@@ -226,7 +215,6 @@ public class ParserTest {
 
     @Test
     public void testAssignment() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "R", 2));
         tokens.add(5, new Token(Token.Type.STRING, "\"THREE\"", 2));
@@ -250,7 +238,6 @@ public class ParserTest {
 
     @Test
     public void testAssignmentWithNoobType() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "R", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "NOOB", 2));
@@ -272,10 +259,8 @@ public class ParserTest {
         assertNull(literal.getValue());
     }
 
-
     @Test
     public void testConsumeWithUnexpectedTokenType() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "VAR", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "R", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "NOOB", 2));
@@ -288,10 +273,8 @@ public class ParserTest {
         assertEquals("Expected IDENTIFIER but found KEYWORD", exception.getMessage());
     }
 
-
     @Test
     public void testUnknownKeywordExpression() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "R", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "UNKNOWN", 2));
@@ -306,7 +289,6 @@ public class ParserTest {
 
     @Test
     public void testInputStatement() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "GIMMEH", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 2));
         tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
@@ -324,7 +306,6 @@ public class ParserTest {
 
     @Test
     public void testPrintStatementWithLiteral() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
         tokens.add(4, new Token(Token.Type.STRING, "\"Hello, world!\"", 2));
         tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
@@ -346,7 +327,6 @@ public class ParserTest {
 
     @Test
     public void testPrintStatementWithIdentifier() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "INPUTVAR", 2));
         tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
@@ -367,7 +347,6 @@ public class ParserTest {
 
     @Test
     public void testPrintStatementWithConcatenation() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
         tokens.add(4, new Token(Token.Type.STRING, "\"Var: \"", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -397,7 +376,6 @@ public class ParserTest {
 
     @Test
     public void testPrintStatementWithSmoosh() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "SMOOSH", 2));
         tokens.add(5, new Token(Token.Type.STRING, "\"Var: \"", 2));
@@ -429,7 +407,6 @@ public class ParserTest {
 
     @Test
     public void testConcatenationWithLiterals() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "SMOOSH", 2));
         tokens.add(4, new Token(Token.Type.STRING, "\"Hello\"", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -458,7 +435,6 @@ public class ParserTest {
 
     @Test
     public void testConcatenationWithLiteralsAndIdentifier() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "SMOOSH", 2));
         tokens.add(4, new Token(Token.Type.STRING, "\"SHello\"", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -492,7 +468,6 @@ public class ParserTest {
 
     @Test
     public void testCastingWithLiteral() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "MAEK", 2));
         tokens.add(4, new Token(Token.Type.STRING, "\"123\"", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "A", 2));
@@ -518,7 +493,6 @@ public class ParserTest {
 
     @Test
     public void testMathOperationWithLiterals() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "SUM OF", 2));
         tokens.add(4, new Token(Token.Type.NUMBER, "3", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -547,7 +521,6 @@ public class ParserTest {
 
     @Test
     public void testMathOperationWithLiteralAndIdentifier() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "SUM OF", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "NUM", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -575,7 +548,6 @@ public class ParserTest {
 
     @Test
     public void testMathOperationWithIdentifiers() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "SUM OF", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "NUM", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -602,7 +574,6 @@ public class ParserTest {
 
     @Test
     public void testBooleanOperationWithLiterals() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "BOTH OF", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "WIN", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -631,7 +602,6 @@ public class ParserTest {
 
     @Test
     public void testBooleanOperationWithNot() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "NOT", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "WIN", 2));
         tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
@@ -654,7 +624,6 @@ public class ParserTest {
 
     @Test
     public void testBooleanOperationWithAllOf() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "ALL OF", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "WIN", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -684,7 +653,6 @@ public class ParserTest {
 
     @Test
     public void testBooleanOperationWithBothSaem() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "BOTH SAEM", 2));
         tokens.add(4, new Token(Token.Type.NUMBER, "3", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -713,7 +681,6 @@ public class ParserTest {
 
     @Test
     public void testParseBooleanOperationWithMultipleOperands() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "ALL OF", 2));
         tokens.add(4, new Token(Token.Type.KEYWORD, "WIN", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
@@ -749,29 +716,28 @@ public class ParserTest {
 
     @Test
     public void testConditionalStatement() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "O RLY?", 2));
         tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(5, new Token(Token.Type.KEYWORD, "YA RLY", 2));
-        tokens.add(6, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(7, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(8, new Token(Token.Type.STRING, "\"NUM is 10\"", 2));
-        tokens.add(9, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(10, new Token(Token.Type.KEYWORD, "MEBBE", 2));
-        tokens.add(11, new Token(Token.Type.KEYWORD, "BOTH SAEM", 2));
-        tokens.add(12, new Token(Token.Type.IDENTIFIER, "NUM0", 2));
-        tokens.add(13, new Token(Token.Type.KEYWORD, "AN", 2));
-        tokens.add(14, new Token(Token.Type.NUMBER, "15", 2));
-        tokens.add(15, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(16, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(17, new Token(Token.Type.STRING, "\"NUM is 15\"", 2));
-        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(19, new Token(Token.Type.KEYWORD, "NO WAI", 2));
-        tokens.add(20, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(21, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(22, new Token(Token.Type.STRING, "\"NUM is something else\"", 2));
-        tokens.add(23, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(24, new Token(Token.Type.KEYWORD, "OIC", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "YA RLY", 3));
+        tokens.add(6, new Token(Token.Type.NEWLINE, "\n", 3));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "VISIBLE", 4));
+        tokens.add(8, new Token(Token.Type.STRING, "\"NUM is 10\"", 4));
+        tokens.add(9, new Token(Token.Type.NEWLINE, "\n", 4));
+        tokens.add(10, new Token(Token.Type.KEYWORD, "MEBBE", 5));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "BOTH SAEM", 5));
+        tokens.add(12, new Token(Token.Type.IDENTIFIER, "NUM0", 5));
+        tokens.add(13, new Token(Token.Type.KEYWORD, "AN", 5));
+        tokens.add(14, new Token(Token.Type.NUMBER, "15", 5));
+        tokens.add(15, new Token(Token.Type.NEWLINE, "\n", 5));
+        tokens.add(16, new Token(Token.Type.KEYWORD, "VISIBLE", 6));
+        tokens.add(17, new Token(Token.Type.STRING, "\"NUM is 15\"", 6));
+        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 6));
+        tokens.add(19, new Token(Token.Type.KEYWORD, "NO WAI", 7));
+        tokens.add(20, new Token(Token.Type.NEWLINE, "\n", 7));
+        tokens.add(21, new Token(Token.Type.KEYWORD, "VISIBLE", 8));
+        tokens.add(22, new Token(Token.Type.STRING, "\"NUM is something else\"", 8));
+        tokens.add(23, new Token(Token.Type.NEWLINE, "\n", 8));
+        tokens.add(24, new Token(Token.Type.KEYWORD, "OIC", 9));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -826,23 +792,22 @@ public class ParserTest {
 
     @Test
     public void testSwitchStatement() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "WTF?", 2));
         tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(5, new Token(Token.Type.KEYWORD, "OMG", 2));
-        tokens.add(6, new Token(Token.Type.STRING, "\"R\"", 2));
-        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(8, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(9, new Token(Token.Type.STRING, "\"RED FISH\"", 2));
-        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(11, new Token(Token.Type.KEYWORD, "GTFO", 2));
-        tokens.add(12, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(13, new Token(Token.Type.KEYWORD, "OMGWTF", 2));
-        tokens.add(14, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(15, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(16, new Token(Token.Type.STRING, "\"FISH IS TRANSPARENT\"", 2));
-        tokens.add(17, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(18, new Token(Token.Type.KEYWORD, "OIC", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "OMG", 3));
+        tokens.add(6, new Token(Token.Type.STRING, "\"R\"", 3));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 3));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "VISIBLE", 4));
+        tokens.add(9, new Token(Token.Type.STRING, "\"RED FISH\"", 4));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 4));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "GTFO", 5));
+        tokens.add(12, new Token(Token.Type.NEWLINE, "\n", 5));
+        tokens.add(13, new Token(Token.Type.KEYWORD, "OMGWTF", 6));
+        tokens.add(14, new Token(Token.Type.NEWLINE, "\n", 6));
+        tokens.add(15, new Token(Token.Type.KEYWORD, "VISIBLE", 7));
+        tokens.add(16, new Token(Token.Type.STRING, "\"FISH IS TRANSPARENT\"", 7));
+        tokens.add(17, new Token(Token.Type.NEWLINE, "\n", 7));
+        tokens.add(18, new Token(Token.Type.KEYWORD, "OIC", 8));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -884,8 +849,6 @@ public class ParserTest {
 
     @Test
     public void testSwitchStatementWithUnknownKeyword() {
-        Tokens tokens = createBaseTokens();
-
         tokens.add(3, new Token(Token.Type.KEYWORD, "WTF?", 2));
         tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "UNKNOWN", 2));
@@ -899,18 +862,17 @@ public class ParserTest {
 
     @Test
     public void testSimpleLoopStatement() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "IM IN YR", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "LOOP", 2));
         tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(6, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(7, new Token(Token.Type.STRING, "\"Looping...\"", 2));
-        tokens.add(8, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(9, new Token(Token.Type.KEYWORD, "GTFO", 2));
-        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(11, new Token(Token.Type.KEYWORD, "IM OUTTA YR", 2));
-        tokens.add(12, new Token(Token.Type.IDENTIFIER, "LOOP", 2));
-        tokens.add(13, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "VISIBLE", 3));
+        tokens.add(7, new Token(Token.Type.STRING, "\"Looping...\"", 3));
+        tokens.add(8, new Token(Token.Type.NEWLINE, "\n", 3));
+        tokens.add(9, new Token(Token.Type.KEYWORD, "GTFO", 4));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 4));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "IM OUTTA YR", 5));
+        tokens.add(12, new Token(Token.Type.IDENTIFIER, "LOOP", 5));
+        tokens.add(13, new Token(Token.Type.NEWLINE, "\n", 5));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -943,7 +905,6 @@ public class ParserTest {
 
     @Test
     public void testConditionalLoopStatement() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "IM IN YR", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "LOOP", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "UPPIN", 2));
@@ -955,12 +916,12 @@ public class ParserTest {
         tokens.add(11, new Token(Token.Type.KEYWORD, "AN", 2));
         tokens.add(12, new Token(Token.Type.NUMBER, "10", 2));
         tokens.add(13, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(14, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(15, new Token(Token.Type.IDENTIFIER, "VAR", 2));
-        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(17, new Token(Token.Type.KEYWORD, "IM OUTTA YR", 2));
-        tokens.add(18, new Token(Token.Type.IDENTIFIER, "LOOP", 2));
-        tokens.add(19, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(14, new Token(Token.Type.KEYWORD, "VISIBLE", 3));
+        tokens.add(15, new Token(Token.Type.IDENTIFIER, "VAR", 3));
+        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 3));
+        tokens.add(17, new Token(Token.Type.KEYWORD, "IM OUTTA YR", 4));
+        tokens.add(18, new Token(Token.Type.IDENTIFIER, "LOOP", 4));
+        tokens.add(19, new Token(Token.Type.NEWLINE, "\n", 4));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -996,7 +957,6 @@ public class ParserTest {
 
     @Test
     public void testFunctionDeclaration() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "HOW IZ I", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "FUNC", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "YR", 2));
@@ -1005,14 +965,14 @@ public class ParserTest {
         tokens.add(8, new Token(Token.Type.KEYWORD, "YR", 2));
         tokens.add(9, new Token(Token.Type.IDENTIFIER, "ARG2", 2));
         tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(11, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(12, new Token(Token.Type.IDENTIFIER, "ARG1", 2));
-        tokens.add(13, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(14, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(15, new Token(Token.Type.IDENTIFIER, "ARG2", 2));
-        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(17, new Token(Token.Type.KEYWORD, "IF U SAY SO", 2));
-        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "VISIBLE", 3));
+        tokens.add(12, new Token(Token.Type.IDENTIFIER, "ARG1", 3));
+        tokens.add(13, new Token(Token.Type.NEWLINE, "\n", 3));
+        tokens.add(14, new Token(Token.Type.KEYWORD, "VISIBLE", 4));
+        tokens.add(15, new Token(Token.Type.IDENTIFIER, "ARG2", 4));
+        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 4));
+        tokens.add(17, new Token(Token.Type.KEYWORD, "IF U SAY SO", 5));
+        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 5));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -1043,7 +1003,6 @@ public class ParserTest {
 
     @Test
     public void testFunctionWithReturn() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "HOW IZ I", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "ADD", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "YR", 2));
@@ -1052,14 +1011,14 @@ public class ParserTest {
         tokens.add(8, new Token(Token.Type.KEYWORD, "YR", 2));
         tokens.add(9, new Token(Token.Type.IDENTIFIER, "B", 2));
         tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(11, new Token(Token.Type.KEYWORD, "FOUND YR", 2));
-        tokens.add(12, new Token(Token.Type.KEYWORD, "SUM OF", 2));
-        tokens.add(13, new Token(Token.Type.IDENTIFIER, "A1", 2));
-        tokens.add(14, new Token(Token.Type.KEYWORD, "AN", 2));
-        tokens.add(15, new Token(Token.Type.IDENTIFIER, "B", 2));
-        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(17, new Token(Token.Type.KEYWORD, "IF U SAY SO", 2));
-        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "FOUND YR", 3));
+        tokens.add(12, new Token(Token.Type.KEYWORD, "SUM OF", 3));
+        tokens.add(13, new Token(Token.Type.IDENTIFIER, "A1", 3));
+        tokens.add(14, new Token(Token.Type.KEYWORD, "AN", 3));
+        tokens.add(15, new Token(Token.Type.IDENTIFIER, "B", 3));
+        tokens.add(16, new Token(Token.Type.NEWLINE, "\n", 3));
+        tokens.add(17, new Token(Token.Type.KEYWORD, "IF U SAY SO", 4));
+        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 4));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -1094,7 +1053,6 @@ public class ParserTest {
 
     @Test
     public void testFunctionCall() {
-        Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "I IZ", 2));
         tokens.add(4, new Token(Token.Type.IDENTIFIER, "FUNC", 2));
         tokens.add(5, new Token(Token.Type.KEYWORD, "YR", 2));
@@ -1124,7 +1082,4 @@ public class ParserTest {
         assertEquals("YARN", arg2.getValueType());
         assertEquals("\"World\"", arg2.getValue());
     }
-
-
 }
-
