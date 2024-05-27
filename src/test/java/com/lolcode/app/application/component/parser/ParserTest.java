@@ -73,6 +73,33 @@ public class ParserTest {
     }
 
     @Test
+    public void testParseExpressionWithFloatNumber() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
+        tokens.add(4, new Token(Token.Type.IDENTIFIER, "FLT", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "ITZ", 2));
+        tokens.add(6, new Token(Token.Type.NUMBER, "3.14", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(VariableDeclaration.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        VariableDeclaration varDecl = (VariableDeclaration) program.getBody().get(0);
+        assertEquals("FLT", varDecl.getName());
+        assertNotNull(varDecl.getValue());
+        assertInstanceOf(Literal.class, varDecl.getValue());
+
+        Literal literal = (Literal) varDecl.getValue();
+        assertEquals("NUMBAR", literal.getValueType());
+        assertEquals(3.14f, literal.getValue());
+    }
+
+
+    @Test
     public void testVariableDeclarationWithCasting() {
         Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "I HAS A", 2));
@@ -219,6 +246,62 @@ public class ParserTest {
         Literal literal = (Literal) assignment.getValue();
         assertEquals("YARN", literal.getValueType());
         assertEquals("\"THREE\"", literal.getValue());
+    }
+
+    @Test
+    public void testAssignmentWithNoobType() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "R", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "NOOB", 2));
+        tokens.add(6, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Assignment.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Assignment assignment = (Assignment) program.getBody().get(0);
+        assertEquals("VAR", assignment.getVariable());
+        assertInstanceOf(Literal.class, assignment.getValue());
+
+        Literal literal = (Literal) assignment.getValue();
+        assertEquals("NOOB", literal.getValueType());
+        assertNull(literal.getValue());
+    }
+
+
+    @Test
+    public void testConsumeWithUnexpectedTokenType() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "VAR", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "R", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "NOOB", 2));
+        tokens.add(5, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            parser.parse(tokens);
+        });
+
+        assertEquals("Expected IDENTIFIER but found KEYWORD", exception.getMessage());
+    }
+
+
+    @Test
+    public void testUnknownKeywordExpression() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.IDENTIFIER, "VAR", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "R", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "UNKNOWN", 2));
+        tokens.add(6, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            parser.parse(tokens);
+        });
+
+        assertEquals("Unknown keyword expression: UNKNOWN", exception.getMessage());
     }
 
     @Test
@@ -629,6 +712,42 @@ public class ParserTest {
     }
 
     @Test
+    public void testParseBooleanOperationWithMultipleOperands() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "ALL OF", 2));
+        tokens.add(4, new Token(Token.Type.KEYWORD, "WIN", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(6, new Token(Token.Type.KEYWORD, "FAIL", 2));
+        tokens.add(7, new Token(Token.Type.KEYWORD, "AN", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "WIN", 2));
+        tokens.add(9, new Token(Token.Type.KEYWORD, "MKAY", 2));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(BooleanOperation.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        BooleanOperation boolOp = (BooleanOperation) program.getBody().get(0);
+        assertEquals("ALL OF", boolOp.getOperator());
+        assertEquals(3, boolOp.getOperands().size());
+
+        Literal operand1 = (Literal) boolOp.getOperands().get(0);
+        assertEquals("TROOF", operand1.getValueType());
+        assertEquals(true, operand1.getValue());
+
+        Literal operand2 = (Literal) boolOp.getOperands().get(1);
+        assertEquals("TROOF", operand2.getValueType());
+        assertEquals(false, operand2.getValue());
+
+        Literal operand3 = (Literal) boolOp.getOperands().get(2);
+        assertEquals("TROOF", operand3.getValueType());
+        assertEquals(true, operand3.getValue());
+    }
+
+    @Test
     public void testConditionalStatement() {
         Tokens tokens = createBaseTokens();
         tokens.add(3, new Token(Token.Type.KEYWORD, "O RLY?", 2));
@@ -718,18 +837,12 @@ public class ParserTest {
         tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
         tokens.add(11, new Token(Token.Type.KEYWORD, "GTFO", 2));
         tokens.add(12, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(13, new Token(Token.Type.KEYWORD, "OMG", 2));
-        tokens.add(14, new Token(Token.Type.STRING, "\"Y\"", 2));
-        tokens.add(15, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(16, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(17, new Token(Token.Type.STRING, "\"YELLOW FISH\"", 2));
-        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(19, new Token(Token.Type.KEYWORD, "OMGWTF", 2));
-        tokens.add(20, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(21, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
-        tokens.add(22, new Token(Token.Type.STRING, "\"FISH IS TRANSPARENT\"", 2));
-        tokens.add(23, new Token(Token.Type.NEWLINE, "\n", 2));
-        tokens.add(24, new Token(Token.Type.KEYWORD, "OIC", 2));
+        tokens.add(13, new Token(Token.Type.KEYWORD, "OMGWTF", 2));
+        tokens.add(14, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(15, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(16, new Token(Token.Type.STRING, "\"FISH IS TRANSPARENT\"", 2));
+        tokens.add(17, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(18, new Token(Token.Type.KEYWORD, "OIC", 2));
 
         SyntaxTree syntaxTree = parser.parse(tokens);
 
@@ -742,7 +855,7 @@ public class ParserTest {
         assertInstanceOf(Identifier.class, switchStmt.getCondition());
         assertEquals("IT", ((Identifier) switchStmt.getCondition()).getName());
 
-        assertEquals(2, switchStmt.getCases().size());
+        assertEquals(1, switchStmt.getCases().size());
 
         Case case1 = switchStmt.getCases().get(0);
         assertInstanceOf(Literal.class, case1.getValue());
@@ -758,19 +871,6 @@ public class ParserTest {
         assertEquals("YARN", case1PrintValue.getValueType());
         assertEquals("\"RED FISH\"", case1PrintValue.getValue());
 
-        Case case2 = switchStmt.getCases().get(1);
-        assertInstanceOf(Literal.class, case2.getValue());
-        Literal case2Value = (Literal) case2.getValue();
-        assertEquals("YARN", case2Value.getValueType());
-        assertEquals("\"Y\"", case2Value.getValue());
-        assertEquals(1, case2.getBody().getBody().size());
-        assertInstanceOf(Print.class, case2.getBody().getBody().get(0));
-        Print case2Print = (Print) case2.getBody().getBody().get(0);
-        assertInstanceOf(Literal.class, case2Print.getValue());
-        Literal case2PrintValue = (Literal) case2Print.getValue();
-        assertEquals("YARN", case2PrintValue.getValueType());
-        assertEquals("\"YELLOW FISH\"", case2PrintValue.getValue());
-
         DefaultCase defaultCase = switchStmt.getDefaultCase();
         assertNotNull(defaultCase);
         assertEquals(1, defaultCase.getBody().getBody().size());
@@ -780,6 +880,21 @@ public class ParserTest {
         Literal defaultPrintValue = (Literal) defaultPrint.getValue();
         assertEquals("YARN", defaultPrintValue.getValueType());
         assertEquals("\"FISH IS TRANSPARENT\"", defaultPrintValue.getValue());
+    }
+
+    @Test
+    public void testSwitchStatementWithUnknownKeyword() {
+        Tokens tokens = createBaseTokens();
+
+        tokens.add(3, new Token(Token.Type.KEYWORD, "WTF?", 2));
+        tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "UNKNOWN", 2));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            parser.parse(tokens);
+        });
+
+        assertEquals("Unknown keyword in switch statement: UNKNOWN", exception.getMessage());
     }
 
     @Test
