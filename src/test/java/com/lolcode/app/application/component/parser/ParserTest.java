@@ -704,5 +704,83 @@ public class ParserTest {
         assertEquals("YARN", falseLiteral.getValueType());
         assertEquals("\"NUM is something else\"", falseLiteral.getValue());
     }
+
+    @Test
+    public void testSwitchStatement() {
+        Tokens tokens = createBaseTokens();
+        tokens.add(3, new Token(Token.Type.KEYWORD, "WTF?", 2));
+        tokens.add(4, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(5, new Token(Token.Type.KEYWORD, "OMG", 2));
+        tokens.add(6, new Token(Token.Type.STRING, "\"R\"", 2));
+        tokens.add(7, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(8, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(9, new Token(Token.Type.STRING, "\"RED FISH\"", 2));
+        tokens.add(10, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(11, new Token(Token.Type.KEYWORD, "GTFO", 2));
+        tokens.add(12, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(13, new Token(Token.Type.KEYWORD, "OMG", 2));
+        tokens.add(14, new Token(Token.Type.STRING, "\"Y\"", 2));
+        tokens.add(15, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(16, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(17, new Token(Token.Type.STRING, "\"YELLOW FISH\"", 2));
+        tokens.add(18, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(19, new Token(Token.Type.KEYWORD, "OMGWTF", 2));
+        tokens.add(20, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(21, new Token(Token.Type.KEYWORD, "VISIBLE", 2));
+        tokens.add(22, new Token(Token.Type.STRING, "\"FISH IS TRANSPARENT\"", 2));
+        tokens.add(23, new Token(Token.Type.NEWLINE, "\n", 2));
+        tokens.add(24, new Token(Token.Type.KEYWORD, "OIC", 2));
+
+        SyntaxTree syntaxTree = parser.parse(tokens);
+
+        Program program = syntaxTree.getProgram();
+        assertEquals(2, program.getBody().size());
+        assertInstanceOf(Switch.class, program.getBody().get(0));
+        assertInstanceOf(EndProgram.class, program.getBody().get(1));
+
+        Switch switchStmt = (Switch) program.getBody().get(0);
+        assertInstanceOf(Identifier.class, switchStmt.getCondition());
+        assertEquals("IT", ((Identifier) switchStmt.getCondition()).getName());
+
+        assertEquals(2, switchStmt.getCases().size());
+
+        Case case1 = switchStmt.getCases().get(0);
+        assertInstanceOf(Literal.class, case1.getValue());
+        Literal case1Value = (Literal) case1.getValue();
+        assertEquals("YARN", case1Value.getValueType());
+        assertEquals("\"R\"", case1Value.getValue());
+        assertEquals(2, case1.getBody().getBody().size());
+        assertInstanceOf(Print.class, case1.getBody().getBody().get(0));
+        assertInstanceOf(ConditionalBreak.class, case1.getBody().getBody().get(1));
+        Print case1Print = (Print) case1.getBody().getBody().get(0);
+        assertInstanceOf(Literal.class, case1Print.getValue());
+        Literal case1PrintValue = (Literal) case1Print.getValue();
+        assertEquals("YARN", case1PrintValue.getValueType());
+        assertEquals("\"RED FISH\"", case1PrintValue.getValue());
+
+        Case case2 = switchStmt.getCases().get(1);
+        assertInstanceOf(Literal.class, case2.getValue());
+        Literal case2Value = (Literal) case2.getValue();
+        assertEquals("YARN", case2Value.getValueType());
+        assertEquals("\"Y\"", case2Value.getValue());
+        assertEquals(1, case2.getBody().getBody().size());
+        assertInstanceOf(Print.class, case2.getBody().getBody().get(0));
+        Print case2Print = (Print) case2.getBody().getBody().get(0);
+        assertInstanceOf(Literal.class, case2Print.getValue());
+        Literal case2PrintValue = (Literal) case2Print.getValue();
+        assertEquals("YARN", case2PrintValue.getValueType());
+        assertEquals("\"YELLOW FISH\"", case2PrintValue.getValue());
+
+        DefaultCase defaultCase = switchStmt.getDefaultCase();
+        assertNotNull(defaultCase);
+        assertEquals(1, defaultCase.getBody().getBody().size());
+        assertInstanceOf(Print.class, defaultCase.getBody().getBody().get(0));
+        Print defaultPrint = (Print) defaultCase.getBody().getBody().get(0);
+        assertInstanceOf(Literal.class, defaultPrint.getValue());
+        Literal defaultPrintValue = (Literal) defaultPrint.getValue();
+        assertEquals("YARN", defaultPrintValue.getValueType());
+        assertEquals("\"FISH IS TRANSPARENT\"", defaultPrintValue.getValue());
+    }
+
 }
 
