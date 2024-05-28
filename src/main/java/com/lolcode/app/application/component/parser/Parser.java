@@ -28,7 +28,7 @@ public class Parser {
         statementParsers.put("GIMMEH", this::parseInputStatement);
         statementParsers.put("O RLY?", this::parseConditional);
         statementParsers.put("WTF?", this::parseSwitch);
-        statementParsers.put("GTFO", this::parseConditionalBreak);
+        statementParsers.put("GTFO", this::parseBreak);
         statementParsers.put("IM IN YR", this::parseLoop);
         statementParsers.put("IM OUTTA YR", this::parseLoopExit);
         statementParsers.put("HOW IZ I", this::parseFunctionDeclaration);
@@ -180,6 +180,7 @@ public class Parser {
                 return new Identifier(identifierValue);
             case STRING:
                 String stringValue = currentToken.getValue();
+                stringValue = stringValue.substring(1, stringValue.length() - 1);
                 consume(Token.Type.STRING);
                 return new Literal("YARN", stringValue);
             case NUMBER:
@@ -320,10 +321,10 @@ public class Parser {
         return new Switch(condition, cases, defaultCase);
     }
 
-    private ConditionalBreak parseConditionalBreak() {
+    private Break parseBreak() {
         consume(Token.Type.KEYWORD);
         consumeNewline();
-        return new ConditionalBreak(new Identifier("IT"));
+        return new Break();
     }
 
     private Loop parseLoop() {
