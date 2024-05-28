@@ -48,9 +48,10 @@ public class Loop extends ASTNode {
                 try {
                     body.interpret(context);
                 } catch (BreakException e) {
-                    return null;
+                    break;
                 }
             }
+            return null;
         }
 
         Object variableValue;

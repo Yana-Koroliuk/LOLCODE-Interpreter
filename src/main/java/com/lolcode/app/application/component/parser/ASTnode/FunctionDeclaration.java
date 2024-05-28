@@ -31,6 +31,7 @@ public class FunctionDeclaration extends ASTNode {
 
     @Override
     public Object interpret(Context context) {
+        context.put(name, this);
         return null;
     }
 }

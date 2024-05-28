@@ -28,6 +28,25 @@ public class FunctionCall extends ASTNode {
 
     @Override
     public Object interpret(Context context) {
-        return null;
+        if(!context.containsKey(name)) {
+            throw new IllegalStateException("Function '" + name + "' is not declared.");
+        }
+
+        if (!(context.get(name) instanceof FunctionDeclaration function)) {
+            throw new IllegalStateException("'" + name + "' is not a function.");
+        }
+
+        Context newContext = new Context();
+        newContext.putAll(context);
+
+        if (function.getParams().size() != args.size()) {
+            throw new IllegalArgumentException("Argument mismatch for function: " +  name);
+        }
+
+        for (int i = 0; i < args.size(); i++) {
+            newContext.put(function.getParams().get(i), args.get(i).interpret(context));
+        }
+
+        return function.getBody().interpret(newContext);
     }
 }
