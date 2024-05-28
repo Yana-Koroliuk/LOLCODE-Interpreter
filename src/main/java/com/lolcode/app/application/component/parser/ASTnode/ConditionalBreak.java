@@ -1,6 +1,8 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.application.component.parser.ParseType;
+import com.lolcode.app.application.exception.BreakException;
 import lombok.*;
 
 @Getter
@@ -18,5 +20,10 @@ public class ConditionalBreak extends ASTNode {
         return "ConditionalBreak{" +
                 "condition=" + condition +
                 '}';
+    }
+
+    @Override
+    public Object interpret(Context context) {
+        throw new BreakException();
     }
 }

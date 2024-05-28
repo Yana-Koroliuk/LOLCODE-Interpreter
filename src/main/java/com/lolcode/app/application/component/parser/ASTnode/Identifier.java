@@ -1,5 +1,6 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
@@ -18,5 +19,13 @@ public class Identifier extends ASTNode {
         return "Identifier{" +
                 "name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public Object interpret(Context context) {
+        if (!context.containsKey(name)) {
+            throw new IllegalArgumentException("Variable '" + name + "' has not been declared.");
+        }
+        return context.get(name);
     }
 }
