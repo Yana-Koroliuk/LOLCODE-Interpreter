@@ -180,6 +180,7 @@ public class Parser {
                 return new Identifier(identifierValue);
             case STRING:
                 String stringValue = currentToken.getValue();
+                stringValue = stringValue.substring(1, stringValue.length() - 1);
                 consume(Token.Type.STRING);
                 return new Literal("YARN", stringValue);
             case NUMBER:
