@@ -28,7 +28,7 @@ public class Parser {
         statementParsers.put("GIMMEH", this::parseInputStatement);
         statementParsers.put("O RLY?", this::parseConditional);
         statementParsers.put("WTF?", this::parseSwitch);
-        statementParsers.put("GTFO", this::parseConditionalBreak);
+        statementParsers.put("GTFO", this::parseBreak);
         statementParsers.put("IM IN YR", this::parseLoop);
         statementParsers.put("IM OUTTA YR", this::parseLoopExit);
         statementParsers.put("HOW IZ I", this::parseFunctionDeclaration);
@@ -321,10 +321,10 @@ public class Parser {
         return new Switch(condition, cases, defaultCase);
     }
 
-    private ConditionalBreak parseConditionalBreak() {
+    private Break parseBreak() {
         consume(Token.Type.KEYWORD);
         consumeNewline();
-        return new ConditionalBreak(new Identifier("IT"));
+        return new Break();
     }
 
     private Loop parseLoop() {

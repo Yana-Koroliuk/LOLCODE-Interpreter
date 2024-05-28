@@ -5,18 +5,15 @@ import lombok.*;
 
 @Getter
 @Setter
-public class ConditionalBreak extends ASTNode {
-    private ASTNode condition;
+public class Break extends ASTNode {
 
-    public ConditionalBreak(ASTNode condition) {
+    public Break() {
         super(ParseType.CONDITIONAL_BREAK);
-        this.condition = condition;
     }
 
     @Override
     public String toString() {
-        return "ConditionalBreak{" +
-                "condition=" + condition +
+        return "Break{" +
                 '}';
     }
 }
