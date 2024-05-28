@@ -24,6 +24,10 @@ public class ConditionalBreak extends ASTNode {
 
     @Override
     public Object interpret(Context context) {
-        throw new BreakException();
+        Object condition =  this.condition.interpret(context);
+        if (!(condition instanceof Boolean) || (Boolean) condition) {
+            throw new BreakException();
+        }
+        return null;
     }
 }
