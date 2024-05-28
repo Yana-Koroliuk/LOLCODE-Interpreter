@@ -502,6 +502,107 @@ class LexerTest {
         );
     }
 
+    @Test
+    void lexLoopStatements() throws JsonProcessingException {
+        givenSourceCode("""
+                IM IN YR LOOP
+                  VISIBLE "Looping..."
+                  GTFO
+                IM OUTTA YR LOOP
+                                
+                IM IN YR LOOP UPPIN YR VAR TIL BOTH SAEM VAR AN 10
+                  VISIBLE VAR
+                IM OUTTA YR LOOP
+                                
+                BTW Цикл в циклі
+                I HAS A COUNT ITZ 0
+                IM IN YR OUTERLOOP
+                  IM IN YR INNERLOOP
+                    VISIBLE "Outer loop count: " AN COUNT
+                    COUNT R SUM OF COUNT AN 1
+                    BOTH SAEM COUNT AN 3, GTFO
+                  IM OUTTA YR INNERLOOP
+                  VISIBLE "End of inner loop"
+                  GTFO
+                IM OUTTA YR OUTERLOOP
+                """);
+        
+        whenLex();
+        
+        thenTokensAre("""
+                [
+                  { "type": "KEYWORD", "value": "IM IN YR", "line": 1 },
+                  { "type": "IDENTIFIER", "value": "LOOP", "line": 1 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 1 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 2 },
+                  { "type": "STRING", "value": "\\"Looping...\\"", "line": 2 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 2 },
+                  { "type": "KEYWORD", "value": "GTFO", "line": 3 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 3 },
+                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 4 },
+                  { "type": "IDENTIFIER", "value": "LOOP", "line": 4 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 4 },
+                  { "type": "KEYWORD", "value": "IM IN YR", "line": 5 },
+                  { "type": "IDENTIFIER", "value": "LOOP", "line": 5 },
+                  { "type": "KEYWORD", "value": "UPPIN", "line": 5 },
+                  { "type": "KEYWORD", "value": "YR", "line": 5 },
+                  { "type": "IDENTIFIER", "value": "VAR", "line": 5 },
+                  { "type": "KEYWORD", "value": "TIL", "line": 5 },
+                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 5 },
+                  { "type": "IDENTIFIER", "value": "VAR", "line": 5 },
+                  { "type": "KEYWORD", "value": "AN", "line": 5 },
+                  { "type": "NUMBER", "value": 10, "line": 5 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 5 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 6 },
+                  { "type": "IDENTIFIER", "value": "VAR", "line": 6 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 6 },
+                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 7 },
+                  { "type": "IDENTIFIER", "value": "LOOP", "line": 7 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 7 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 8 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 8 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 8 },
+                  { "type": "NUMBER", "value": 0, "line": 8 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 8 },
+                  { "type": "KEYWORD", "value": "IM IN YR", "line": 9 },
+                  { "type": "IDENTIFIER", "value": "OUTERLOOP", "line": 9 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 9 },
+                  { "type": "KEYWORD", "value": "IM IN YR", "line": 10 },
+                  { "type": "IDENTIFIER", "value": "INNERLOOP", "line": 10 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 10 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 11 },
+                  { "type": "STRING", "value": "\\"Outer loop count: \\"", "line": 11 },
+                  { "type": "KEYWORD", "value": "AN", "line": 11 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 11 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 11 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 12 },
+                  { "type": "KEYWORD", "value": "R", "line": 12 },
+                  { "type": "KEYWORD", "value": "SUM OF", "line": 12 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 12 },
+                  { "type": "KEYWORD", "value": "AN", "line": 12 },
+                  { "type": "NUMBER", "value": 1, "line": 12 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 12 },
+                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 13 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 13 },
+                  { "type": "KEYWORD", "value": "AN", "line": 13 },
+                  { "type": "NUMBER", "value": 3, "line": 13 },
+                  { "type": "KEYWORD", "value": "GTFO", "line": 13 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 13 },
+                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 14 },
+                  { "type": "IDENTIFIER", "value": "INNERLOOP", "line": 14 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 14 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 15 },
+                  { "type": "STRING", "value": "\\"End of inner loop\\"", "line": 15 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 15 },
+                  { "type": "KEYWORD", "value": "GTFO", "line": 16 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 16 },
+                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 17 },
+                  { "type": "IDENTIFIER", "value": "OUTERLOOP", "line": 17 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 17 }
+                ]
+                """);
+    }
+
     private void givenSourceCode(String code) {
         sourceCode = new TestSourceCode(code);
     }
