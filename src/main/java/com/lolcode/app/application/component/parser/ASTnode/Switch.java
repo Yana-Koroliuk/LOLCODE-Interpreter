@@ -2,7 +2,6 @@ package com.lolcode.app.application.component.parser.ASTnode;
 
 import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.application.component.parser.ParseType;
-import com.lolcode.app.application.exception.BreakException;
 import lombok.*;
 
 import java.util.List;
@@ -36,15 +35,12 @@ public class Switch extends ASTNode {
         Object caseResult = null;
         boolean caseExecuted = false;
 
-        try {
-            for (Case caseObj : cases) {
-                if (caseObj.getValue().interpret(context).equals(conditionValue)) {
-                    caseResult = caseObj.interpret(context);
-                    caseExecuted = true;
-                }
+        for (Case caseObj : cases) {
+            if (caseObj.getValue().interpret(context).equals(conditionValue)) {
+                caseResult = caseObj.interpret(context);
+                caseExecuted = true;
+                if (caseResult == Break.BREAK) break;
             }
-        } catch (BreakException e) {
-            return caseResult;
         }
         if (defaultCase != null && !caseExecuted) {
             return defaultCase.interpret(context);

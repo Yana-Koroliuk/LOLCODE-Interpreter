@@ -2,7 +2,6 @@ package com.lolcode.app.application.component.parser.ASTnode;
 
 import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.application.component.parser.ParseType;
-import com.lolcode.app.application.exception.BreakException;
 import lombok.*;
 
 
@@ -43,15 +42,14 @@ public class Loop extends ASTNode {
 
     @Override
     public Object interpret(Context context) {
+        Object result;
+
         if(operation == null && variable == null && condition == null) {
             while (true) {
-                try {
-                    body.interpret(context);
-                } catch (BreakException e) {
-                    break;
-                }
+                result = body.interpret(context);
+                if (result == Break.BREAK) break;
             }
-            return null;
+            return result;
         }
 
         Object variableValue;
@@ -75,21 +73,15 @@ public class Loop extends ASTNode {
         switch (operation) {
             case "UPPIN" -> {
                 while (!(boolean) condition.interpret(context)) {
-                    try {
-                        body.interpret(context);
-                    } catch (BreakException e) {
-                        break;
-                    }
+                    result = body.interpret(context);
+                    if (result == Break.BREAK) break;
                     context.put(varName, value = (int) value + 1);
                 }
             }
             case "NERFIN" -> {
                 while (!(boolean) condition.interpret(context)) {
-                    try {
-                        body.interpret(context);
-                    } catch (BreakException e) {
-                        break;
-                    }
+                    result = body.interpret(context);
+                    if (result == Break.BREAK) break;
                     context.put(varName, value = (int) value - 1);
                 }
             }
