@@ -47,7 +47,7 @@ class LexerTest {
                 SMOOSH "SHello" AN " " AN INPUTVAR MKAY
                 VISIBLE IT
                                 
-                MAEK "123" A NUMBR
+                MAEK "6" A NUMBR
                 I HAS A STRVAL ITZ "456"
                 I HAS A NUMVAL ITZ MAEK STRVAL A NUMBR
                 I HAS A NUMVAL1 ITZ 159
@@ -182,7 +182,7 @@ class LexerTest {
                   { "type": "IDENTIFIER", "value": "IT", "line": 21 },
                   { "type": "NEWLINE", "value": "\\n", "line": 21 },
                   { "type": "KEYWORD", "value": "MAEK", "line": 22 },
-                  { "type": "STRING", "value": "\\"123\\"", "line": 22 },
+                  { "type": "STRING", "value": "\\"6\\"", "line": 22 },
                   { "type": "KEYWORD", "value": "A", "line": 22 },
                   { "type": "KEYWORD", "value": "NUMBR", "line": 22 },
                   { "type": "NEWLINE", "value": "\\n", "line": 22 },
@@ -415,7 +415,7 @@ class LexerTest {
                     VISIBLE "FISH IS TRANSPARENT"
                 OIC    
                 """);
-        
+
         whenLex();
 
         thenTokensAre("""
@@ -526,9 +526,9 @@ class LexerTest {
                   GTFO
                 IM OUTTA YR OUTERLOOP
                 """);
-        
+
         whenLex();
-        
+
         thenTokensAre("""
                 [
                   { "type": "KEYWORD", "value": "IM IN YR", "line": 1 },
@@ -599,6 +599,178 @@ class LexerTest {
                   { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 17 },
                   { "type": "IDENTIFIER", "value": "OUTERLOOP", "line": 17 },
                   { "type": "NEWLINE", "value": "\\n", "line": 17 }
+                ]
+                """);
+    }
+
+    @Test
+    void lexFunctions() throws JsonProcessingException {
+        givenSourceCode("""
+                BTW Функція з двома аргументами
+                HOW IZ I FUNC YR ARG1 AN YR ARG2
+                  VISIBLE ARG1
+                  VISIBLE ARG2
+                IF U SAY SO
+                                
+                I IZ FUNC YR "Hello" AN YR "World" MKAY
+                                
+                BTW Функція з поверненням значення
+                HOW IZ I ADD YR A1 AN YR B
+                  FOUND YR SUM OF A1 AN B
+                IF U SAY SO
+                                
+                I HAS A RESULT ITZ I IZ ADD YR 5 AN YR 10 MKAY
+                VISIBLE RESULT
+                                
+                HOW IZ I ADD1 YR A1 AN YR B
+                  I HAS A RESULT ITZ SUM OF A1 AN B
+                  FOUND YR RESULT
+                IF U SAY SO
+                                
+                I HAS A RESULT0 ITZ I IZ ADD1 YR 5 AN YR 10 MKAY
+                VISIBLE RESULT0
+                                
+                BTW Вкладені функції
+                HOW IZ I FUNC2 YR ARG2
+                  VISIBLE ARG2
+                IF U SAY SO
+                                
+                HOW IZ I FUNC1 YR ARG1
+                  VISIBLE ARG1
+                  I IZ FUNC2 YR "Inner call" MKAY
+                IF U SAY SO
+                                
+                I IZ FUNC1 YR "Outer call" MKAY
+                """);
+        
+        whenLex();
+        
+        thenTokensAre("""
+                [
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 1 },
+                  { "type": "IDENTIFIER", "value": "FUNC", "line": 1 },
+                  { "type": "KEYWORD", "value": "YR", "line": 1 },
+                  { "type": "IDENTIFIER", "value": "ARG1", "line": 1 },
+                  { "type": "KEYWORD", "value": "AN", "line": 1 },
+                  { "type": "KEYWORD", "value": "YR", "line": 1 },
+                  { "type": "IDENTIFIER", "value": "ARG2", "line": 1 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 1 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 2 },
+                  { "type": "IDENTIFIER", "value": "ARG1", "line": 2 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 2 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 3 },
+                  { "type": "IDENTIFIER", "value": "ARG2", "line": 3 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 3 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 4 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 4 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 5 },
+                  { "type": "IDENTIFIER", "value": "FUNC", "line": 5 },
+                  { "type": "KEYWORD", "value": "YR", "line": 5 },
+                  { "type": "STRING", "value": "\\"Hello\\"", "line": 5 },
+                  { "type": "KEYWORD", "value": "AN", "line": 5 },
+                  { "type": "KEYWORD", "value": "YR", "line": 5 },
+                  { "type": "STRING", "value": "\\"World\\"", "line": 5 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 5 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 5 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 6 },
+                  { "type": "IDENTIFIER", "value": "ADD", "line": 6 },
+                  { "type": "KEYWORD", "value": "YR", "line": 6 },
+                  { "type": "IDENTIFIER", "value": "A1", "line": 6 },
+                  { "type": "KEYWORD", "value": "AN", "line": 6 },
+                  { "type": "KEYWORD", "value": "YR", "line": 6 },
+                  { "type": "IDENTIFIER", "value": "B", "line": 6 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 6 },
+                  { "type": "KEYWORD", "value": "FOUND YR", "line": 7 },
+                  { "type": "KEYWORD", "value": "SUM OF", "line": 7 },
+                  { "type": "IDENTIFIER", "value": "A1", "line": 7 },
+                  { "type": "KEYWORD", "value": "AN", "line": 7 },
+                  { "type": "IDENTIFIER", "value": "B", "line": 7 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 7 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 8 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 8 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 9 },
+                  { "type": "IDENTIFIER", "value": "RESULT", "line": 9 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 9 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 9 },
+                  { "type": "IDENTIFIER", "value": "ADD", "line": 9 },
+                  { "type": "KEYWORD", "value": "YR", "line": 9 },
+                  { "type": "NUMBER", "value": 5, "line": 9 },
+                  { "type": "KEYWORD", "value": "AN", "line": 9 },
+                  { "type": "KEYWORD", "value": "YR", "line": 9 },
+                  { "type": "NUMBER", "value": 10, "line": 9 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 9 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 9 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 10 },
+                  { "type": "IDENTIFIER", "value": "RESULT", "line": 10 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 10 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 11 },
+                  { "type": "IDENTIFIER", "value": "ADD1", "line": 11 },
+                  { "type": "KEYWORD", "value": "YR", "line": 11 },
+                  { "type": "IDENTIFIER", "value": "A1", "line": 11 },
+                  { "type": "KEYWORD", "value": "AN", "line": 11 },
+                  { "type": "KEYWORD", "value": "YR", "line": 11 },
+                  { "type": "IDENTIFIER", "value": "B", "line": 11 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 11 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 12 },
+                  { "type": "IDENTIFIER", "value": "RESULT", "line": 12 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 12 },
+                  { "type": "KEYWORD", "value": "SUM OF", "line": 12 },
+                  { "type": "IDENTIFIER", "value": "A1", "line": 12 },
+                  { "type": "KEYWORD", "value": "AN", "line": 12 },
+                  { "type": "IDENTIFIER", "value": "B", "line": 12 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 12 },
+                  { "type": "KEYWORD", "value": "FOUND YR", "line": 13 },
+                  { "type": "IDENTIFIER", "value": "RESULT", "line": 13 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 13 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 14 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 14 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 15 },
+                  { "type": "IDENTIFIER", "value": "RESULT0", "line": 15 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 15 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 15 },
+                  { "type": "IDENTIFIER", "value": "ADD1", "line": 15 },
+                  { "type": "KEYWORD", "value": "YR", "line": 15 },
+                  { "type": "NUMBER", "value": 5, "line": 15 },
+                  { "type": "KEYWORD", "value": "AN", "line": 15 },
+                  { "type": "KEYWORD", "value": "YR", "line": 15 },
+                  { "type": "NUMBER", "value": 10, "line": 15 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 15 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 15 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 16 },
+                  { "type": "IDENTIFIER", "value": "RESULT0", "line": 16 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 16 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 17 },
+                  { "type": "IDENTIFIER", "value": "FUNC2", "line": 17 },
+                  { "type": "KEYWORD", "value": "YR", "line": 17 },
+                  { "type": "IDENTIFIER", "value": "ARG2", "line": 17 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 17 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 18 },
+                  { "type": "IDENTIFIER", "value": "ARG2", "line": 18 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 18 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 19 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 19 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 20 },
+                  { "type": "IDENTIFIER", "value": "FUNC1", "line": 20 },
+                  { "type": "KEYWORD", "value": "YR", "line": 20 },
+                  { "type": "IDENTIFIER", "value": "ARG1", "line": 20 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 20 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 21 },
+                  { "type": "IDENTIFIER", "value": "ARG1", "line": 21 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 21 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 22 },
+                  { "type": "IDENTIFIER", "value": "FUNC2", "line": 22 },
+                  { "type": "KEYWORD", "value": "YR", "line": 22 },
+                  { "type": "STRING", "value": "\\"Inner call\\"", "line": 22 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 22 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 22 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 23 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 23 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 24 },
+                  { "type": "IDENTIFIER", "value": "FUNC1", "line": 24 },
+                  { "type": "KEYWORD", "value": "YR", "line": 24 },
+                  { "type": "STRING", "value": "\\"Outer call\\"", "line": 24 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 24 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 24 }
                 ]
                 """);
     }
