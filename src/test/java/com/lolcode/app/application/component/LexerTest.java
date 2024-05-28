@@ -18,7 +18,7 @@ class LexerTest {
     private Tokens tokens;
 
     @Test
-    void lex() throws JsonProcessingException {
+    void lexVariables() throws JsonProcessingException {
         givenSourceCode("""
                 HAI 1.2
                                 
@@ -50,7 +50,7 @@ class LexerTest {
                 MAEK "123" A NUMBR
                 I HAS A STRVAL ITZ "456"
                 I HAS A NUMVAL ITZ MAEK STRVAL A NUMBR
-                I HAS A NUMVAL1 ITZ 789
+                I HAS A NUMVAL1 ITZ 159
                 I HAS A STRVAL1 ITZ MAEK NUMVAL1 A YARN
                 I HAS A STRVAL2 ITZ "WIN"
                 I HAS A BOOLVAL ITZ MAEK STRVAL2 A TROOF
@@ -202,7 +202,7 @@ class LexerTest {
                   { "type": "KEYWORD", "value": "I HAS A", "line": 25 },
                   { "type": "IDENTIFIER", "value": "NUMVAL1", "line": 25 },
                   { "type": "KEYWORD", "value": "ITZ", "line": 25 },
-                  { "type": "NUMBER", "value": 789, "line": 25 },
+                  { "type": "NUMBER", "value": 159, "line": 25 },
                   { "type": "NEWLINE", "value": "\\n", "line": 25 },
                   { "type": "KEYWORD", "value": "I HAS A", "line": 26 },
                   { "type": "IDENTIFIER", "value": "STRVAL1", "line": 26 },
@@ -375,6 +375,128 @@ class LexerTest {
                   { "type": "KEYWORD", "value": "AN", "line": 55 },
                   { "type": "IDENTIFIER", "value": "BOOL2", "line": 55 },
                   { "type": "NEWLINE", "value": "\\n", "line": 55 }
+                ]
+                """
+        );
+    }
+
+    @Test
+    void lexStatements() throws JsonProcessingException {
+        givenSourceCode("""
+                BTW Example: без else if
+                O RLY?
+                  YA RLY
+                    VISIBLE "It is true!"
+                  NO WAI
+                    VISIBLE "It is false!"
+                OIC
+                                
+                BTW Example: з else if
+                I HAS A NUM0 ITZ 15
+                BOTH SAEM NUM0 AN 10
+                O RLY?
+                  YA RLY
+                    VISIBLE "NUM is 10"
+                  MEBBE BOTH SAEM NUM0 AN 15
+                    VISIBLE "NUM is 15"
+                  NO WAI
+                    VISIBLE "NUM is something else"
+                OIC
+                                
+                I HAS A STR0 ITZ "R"
+                STR0
+                WTF?
+                  OMG "R"
+                    VISIBLE "RED FISH"
+                    GTFO
+                  OMG "Y"
+                    VISIBLE "YELLOW FISH"
+                  OMGWTF
+                    VISIBLE "FISH IS TRANSPARENT"
+                OIC    
+                """);
+        
+        whenLex();
+
+        thenTokensAre("""
+                [
+                  { "type": "KEYWORD", "value": "O RLY?", "line": 1 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 1 },
+                  { "type": "KEYWORD", "value": "YA RLY", "line": 2 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 2 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 3 },
+                  { "type": "STRING", "value": "\\"It is true!\\"", "line": 3 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 3 },
+                  { "type": "KEYWORD", "value": "NO WAI", "line": 4 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 4 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 5 },
+                  { "type": "STRING", "value": "\\"It is false!\\"", "line": 5 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 5 },
+                  { "type": "KEYWORD", "value": "OIC", "line": 6 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 6 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 7 },
+                  { "type": "IDENTIFIER", "value": "NUM0", "line": 7 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 7 },
+                  { "type": "NUMBER", "value": 15, "line": 7 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 7 },
+                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 8 },
+                  { "type": "IDENTIFIER", "value": "NUM0", "line": 8 },
+                  { "type": "KEYWORD", "value": "AN", "line": 8 },
+                  { "type": "NUMBER", "value": 10, "line": 8 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 8 },
+                  { "type": "KEYWORD", "value": "O RLY?", "line": 9 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 9 },
+                  { "type": "KEYWORD", "value": "YA RLY", "line": 10 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 10 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 11 },
+                  { "type": "STRING", "value": "\\"NUM is 10\\"", "line": 11 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 11 },
+                  { "type": "KEYWORD", "value": "MEBBE", "line": 12 },
+                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 12 },
+                  { "type": "IDENTIFIER", "value": "NUM0", "line": 12 },
+                  { "type": "KEYWORD", "value": "AN", "line": 12 },
+                  { "type": "NUMBER", "value": 15, "line": 12 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 12 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 13 },
+                  { "type": "STRING", "value": "\\"NUM is 15\\"", "line": 13 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 13 },
+                  { "type": "KEYWORD", "value": "NO WAI", "line": 14 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 14 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 15 },
+                  { "type": "STRING", "value": "\\"NUM is something else\\"", "line": 15 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 15 },
+                  { "type": "KEYWORD", "value": "OIC", "line": 16 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 16 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 17 },
+                  { "type": "IDENTIFIER", "value": "STR0", "line": 17 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 17 },
+                  { "type": "STRING", "value": "\\"R\\"", "line": 17 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 17 },
+                  { "type": "IDENTIFIER", "value": "STR0", "line": 18 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 18 },
+                  { "type": "KEYWORD", "value": "WTF?", "line": 19 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 19 },
+                  { "type": "KEYWORD", "value": "OMG", "line": 20 },
+                  { "type": "STRING", "value": "\\"R\\"", "line": 20 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 20 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 21 },
+                  { "type": "STRING", "value": "\\"RED FISH\\"", "line": 21 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 21 },
+                  { "type": "KEYWORD", "value": "GTFO", "line": 22 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 22 },
+                  { "type": "KEYWORD", "value": "OMG", "line": 23 },
+                  { "type": "STRING", "value": "\\"Y\\"", "line": 23 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 23 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 24 },
+                  { "type": "STRING", "value": "\\"YELLOW FISH\\"", "line": 24 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 24 },
+                  { "type": "KEYWORD", "value": "OMGWTF", "line": 25 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 25 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 26 },
+                  { "type": "STRING", "value": "\\"FISH IS TRANSPARENT\\"", "line": 26 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 26 },
+                  { "type": "KEYWORD", "value": "OIC", "line": 27 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 27 }
                 ]
                 """
         );
