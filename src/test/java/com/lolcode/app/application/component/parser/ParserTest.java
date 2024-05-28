@@ -829,7 +829,7 @@ public class ParserTest {
         assertEquals("R", case1Value.getValue());
         assertEquals(2, case1.getBody().getBody().size());
         assertInstanceOf(Print.class, case1.getBody().getBody().get(0));
-        assertInstanceOf(ConditionalBreak.class, case1.getBody().getBody().get(1));
+        assertInstanceOf(Break.class, case1.getBody().getBody().get(1));
         Print case1Print = (Print) case1.getBody().getBody().get(0);
         assertInstanceOf(Literal.class, case1Print.getValue());
         Literal case1PrintValue = (Literal) case1Print.getValue();
@@ -890,17 +890,13 @@ public class ParserTest {
         Block body = loop.getBody();
         assertEquals(2, body.getBody().size());
         assertInstanceOf(Print.class, body.getBody().get(0));
-        assertInstanceOf(ConditionalBreak.class, body.getBody().get(1));
+        assertInstanceOf(Break.class, body.getBody().get(1));
 
         Print printStmt = (Print) body.getBody().get(0);
         assertInstanceOf(Literal.class, printStmt.getValue());
         Literal literal = (Literal) printStmt.getValue();
         assertEquals("YARN", literal.getValueType());
         assertEquals("Looping...", literal.getValue());
-
-        ConditionalBreak breakStmt = (ConditionalBreak) body.getBody().get(1);
-        assertInstanceOf(Identifier.class, breakStmt.getCondition());
-        assertEquals("IT", ((Identifier) breakStmt.getCondition()).getName());
     }
 
     @Test
