@@ -19,7 +19,7 @@ import static com.lolcode.app.application.component.Lexer.Index.WHITESPACE;
 
 public class Lexer {
     private static final Pattern tokenPatterns = Pattern.compile(
-            "(HAI|KTHXBYE|OBTW|TLDR|VISIBLE|GIMMEH|I HAS A|ITZ|R|SUM OF|DIFF OF|PRODUKT OF|QUOSHUNT OF|MOD OF|BIGGR OF|SMALLR OF|BOTH OF|EITHER OF|WON OF|NOT|ALL OF|ANY OF|WIN|NOOB)|" +
+            "(HAI|KTHXBYE|OBTW|TLDR|VISIBLE|GIMMEH|I HAS A|ITZ|R|SUM OF|DIFF OF|PRODUKT OF|QUOSHUNT OF|MOD OF|BIGGR OF|SMALLR OF|BOTH OF|EITHER OF|WON OF|NOT|ALL OF|ANY OF|WIN|NOOB|AN|SMOOSH|MKAY|MAEK|A|NUMBR|YARN|TROOF|BOTH SAEM|FAIL|DIFFRINT|NUMBAR)(?!\\w)|" +
             "\"([^\"]*)\"|" +
             "([0-9]+(?:\\.[0-9]+)?)|" +
             "([a-zA-Z_][a-zA-Z0-9_]*)|" +
@@ -34,11 +34,11 @@ public class Lexer {
         List<String> lines = sourceCode.getLines();
 
         for (String line : lines) {
-            if (line.isBlank()) {
-                continue;
-            }
             if (line.contains("BTW")) {
                 line = line.substring(0, line.indexOf("BTW"));
+            }
+            if (line.isBlank()) {
+                continue;
             }
             matcher = tokenPatterns.matcher(line);
             while (matcher.find()) {
