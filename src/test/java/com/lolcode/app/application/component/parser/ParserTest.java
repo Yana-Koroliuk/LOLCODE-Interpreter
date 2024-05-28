@@ -64,7 +64,7 @@ public class ParserTest {
 
         Literal literal = (Literal) varDecl.getValue();
         assertEquals("YARN", literal.getValueType());
-        assertEquals("\"Hello\"", literal.getValue());
+        assertEquals("Hello", literal.getValue());
     }
 
     @Test
@@ -233,7 +233,7 @@ public class ParserTest {
 
         Literal literal = (Literal) assignment.getValue();
         assertEquals("YARN", literal.getValueType());
-        assertEquals("\"THREE\"", literal.getValue());
+        assertEquals("THREE", literal.getValue());
     }
 
     @Test
@@ -322,7 +322,7 @@ public class ParserTest {
 
         Literal literal = (Literal) printStmt.getValue();
         assertEquals("YARN", literal.getValueType());
-        assertEquals("\"Hello, world!\"", literal.getValue());
+        assertEquals("Hello, world!", literal.getValue());
     }
 
     @Test
@@ -368,7 +368,7 @@ public class ParserTest {
 
         Literal literal = (Literal) concat.getValues().get(0);
         assertEquals("YARN", literal.getValueType());
-        assertEquals("\"Var: \"", literal.getValue());
+        assertEquals("Var: ", literal.getValue());
 
         Identifier identifier = (Identifier) concat.getValues().get(1);
         assertEquals("INPUTVAR", identifier.getName());
@@ -399,7 +399,7 @@ public class ParserTest {
 
         Literal literal = (Literal) concat.getValues().get(0);
         assertEquals("YARN", literal.getValueType());
-        assertEquals("\"Var: \"", literal.getValue());
+        assertEquals("Var: ", literal.getValue());
 
         Identifier identifier = (Identifier) concat.getValues().get(1);
         assertEquals("INPUTVAR", identifier.getName());
@@ -426,11 +426,11 @@ public class ParserTest {
 
         Literal literal1 = (Literal) concat.getValues().get(0);
         assertEquals("YARN", literal1.getValueType());
-        assertEquals("\"Hello\"", literal1.getValue());
+        assertEquals("Hello", literal1.getValue());
 
         Literal literal2 = (Literal) concat.getValues().get(1);
         assertEquals("YARN", literal2.getValueType());
-        assertEquals("\"World\"", literal2.getValue());
+        assertEquals("World", literal2.getValue());
     }
 
     @Test
@@ -456,11 +456,11 @@ public class ParserTest {
 
         Literal literal1 = (Literal) concat.getValues().get(0);
         assertEquals("YARN", literal1.getValueType());
-        assertEquals("\"SHello\"", literal1.getValue());
+        assertEquals("SHello", literal1.getValue());
 
         Literal literal2 = (Literal) concat.getValues().get(1);
         assertEquals("YARN", literal2.getValueType());
-        assertEquals("\" \"", literal2.getValue());
+        assertEquals(" ", literal2.getValue());
 
         Identifier identifier = (Identifier) concat.getValues().get(2);
         assertEquals("INPUTVAR", identifier.getName());
@@ -486,7 +486,7 @@ public class ParserTest {
 
         Literal literal = (Literal) casting.getValue();
         assertEquals("YARN", literal.getValueType());
-        assertEquals("\"123\"", literal.getValue());
+        assertEquals("123", literal.getValue());
 
         assertEquals("NUMBR", casting.getCastTo());
     }
@@ -757,7 +757,7 @@ public class ParserTest {
         assertInstanceOf(Literal.class, truePrint.getValue());
         Literal trueLiteral = (Literal) truePrint.getValue();
         assertEquals("YARN", trueLiteral.getValueType());
-        assertEquals("\"NUM is 10\"", trueLiteral.getValue());
+        assertEquals("NUM is 10", trueLiteral.getValue());
 
         assertEquals(1, conditional.getMebbeBranches().size());
         MebbeBranch mebbeBranch = conditional.getMebbeBranches().get(0);
@@ -778,7 +778,7 @@ public class ParserTest {
         assertInstanceOf(Literal.class, mebbePrint.getValue());
         Literal mebbeLiteral = (Literal) mebbePrint.getValue();
         assertEquals("YARN", mebbeLiteral.getValueType());
-        assertEquals("\"NUM is 15\"", mebbeLiteral.getValue());
+        assertEquals("NUM is 15", mebbeLiteral.getValue());
 
         Block falseBranch = conditional.getFalseBranch();
         assertEquals(1, falseBranch.getBody().size());
@@ -787,7 +787,7 @@ public class ParserTest {
         assertInstanceOf(Literal.class, falsePrint.getValue());
         Literal falseLiteral = (Literal) falsePrint.getValue();
         assertEquals("YARN", falseLiteral.getValueType());
-        assertEquals("\"NUM is something else\"", falseLiteral.getValue());
+        assertEquals("NUM is something else", falseLiteral.getValue());
     }
 
     @Test
@@ -826,7 +826,7 @@ public class ParserTest {
         assertInstanceOf(Literal.class, case1.getValue());
         Literal case1Value = (Literal) case1.getValue();
         assertEquals("YARN", case1Value.getValueType());
-        assertEquals("\"R\"", case1Value.getValue());
+        assertEquals("R", case1Value.getValue());
         assertEquals(2, case1.getBody().getBody().size());
         assertInstanceOf(Print.class, case1.getBody().getBody().get(0));
         assertInstanceOf(ConditionalBreak.class, case1.getBody().getBody().get(1));
@@ -834,7 +834,7 @@ public class ParserTest {
         assertInstanceOf(Literal.class, case1Print.getValue());
         Literal case1PrintValue = (Literal) case1Print.getValue();
         assertEquals("YARN", case1PrintValue.getValueType());
-        assertEquals("\"RED FISH\"", case1PrintValue.getValue());
+        assertEquals("RED FISH", case1PrintValue.getValue());
 
         DefaultCase defaultCase = switchStmt.getDefaultCase();
         assertNotNull(defaultCase);
@@ -844,7 +844,7 @@ public class ParserTest {
         assertInstanceOf(Literal.class, defaultPrint.getValue());
         Literal defaultPrintValue = (Literal) defaultPrint.getValue();
         assertEquals("YARN", defaultPrintValue.getValueType());
-        assertEquals("\"FISH IS TRANSPARENT\"", defaultPrintValue.getValue());
+        assertEquals("FISH IS TRANSPARENT", defaultPrintValue.getValue());
     }
 
     @Test
@@ -896,7 +896,7 @@ public class ParserTest {
         assertInstanceOf(Literal.class, printStmt.getValue());
         Literal literal = (Literal) printStmt.getValue();
         assertEquals("YARN", literal.getValueType());
-        assertEquals("\"Looping...\"", literal.getValue());
+        assertEquals("Looping...", literal.getValue());
 
         ConditionalBreak breakStmt = (ConditionalBreak) body.getBody().get(1);
         assertInstanceOf(Identifier.class, breakStmt.getCondition());
@@ -1076,10 +1076,10 @@ public class ParserTest {
 
         Literal arg1 = (Literal) functionCall.getArgs().get(0);
         assertEquals("YARN", arg1.getValueType());
-        assertEquals("\"Hello\"", arg1.getValue());
+        assertEquals("Hello", arg1.getValue());
 
         Literal arg2 = (Literal) functionCall.getArgs().get(1);
         assertEquals("YARN", arg2.getValueType());
-        assertEquals("\"World\"", arg2.getValue());
+        assertEquals("World", arg2.getValue());
     }
 }
