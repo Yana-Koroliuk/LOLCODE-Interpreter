@@ -775,6 +775,32 @@ class LexerTest {
                 """);
     }
 
+    @Test
+    void lexLongComment() throws JsonProcessingException {
+        givenSourceCode("""
+                OBTW this is a long comment block
+                                 see, i have more comments here
+                                 and here
+                TLDR
+                """);
+        
+        whenLex();
+        
+        thenTokensAre("[]");
+    }
+
+    @Test
+    void lexOneLineComment() throws JsonProcessingException {
+        givenSourceCode("""
+                BTW this is a one-line comment
+                """);
+
+        whenLex();
+
+        thenTokensAre("[]");
+    }
+    
+
     private void givenSourceCode(String code) {
         sourceCode = new TestSourceCode(code);
     }

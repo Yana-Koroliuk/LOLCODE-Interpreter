@@ -28,16 +28,31 @@ public class Lexer {
     );
     private int lineCounter = 1;
     private Matcher matcher;
+    private boolean comment;
 
     public Tokens lex(SourceCode sourceCode) {
         Tokens tokens = new Tokens();
         List<String> lines = sourceCode.getLines();
 
-        for (String line : lines) {
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            
+            if (line.contains("OBTW")) {
+                comment = true;
+                if (i == lines.size() - 1) {
+                    throw new IllegalArgumentException("Unclosed comment");
+                }
+                continue;
+            }
+            if (line.contains("TLDR")) {
+                comment = false;
+                continue;
+            }
+
             if (line.contains("BTW")) {
                 line = line.substring(0, line.indexOf("BTW"));
             }
-            if (line.isBlank()) {
+            if (comment || line.isBlank()) {
                 continue;
             }
             matcher = tokenPatterns.matcher(line);
