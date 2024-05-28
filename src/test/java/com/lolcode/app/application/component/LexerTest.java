@@ -7,7 +7,10 @@ import com.lolcode.app.domain.Tokens;
 import com.lolcode.app.test.model.TestSourceCode;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LexerTest {
     private final Lexer lexer = new Lexer();
@@ -778,10 +781,12 @@ class LexerTest {
     @Test
     void lexLongComment() throws JsonProcessingException {
         givenSourceCode("""
+                BTW oneline comment
                 OBTW this is a long comment block
                                  see, i have more comments here
                                  and here
                 TLDR
+                BTW oneline comment
                 """);
         
         whenLex();
@@ -800,6 +805,52 @@ class LexerTest {
         thenTokensAre("[]");
     }
     
+    @Test
+    void lexShouldThrowIfTokensAreInvalid() {
+        List.of(
+                "HAI",
+                "HAI ",
+                "HAI 1.3",
+
+                "I HAS A",
+                "I HAS A ",
+
+                "ITZ",
+                "I HAS A VARNAME ITZ",
+                "I HAS A ITZ",
+
+                "GIMMEH",
+                "GIMMEH ",
+
+                " any tokens GTFO",
+
+                "IM IN YR",
+                "var IM IN YR LOOPNAME",
+
+                """
+                IM IN YR OUTERLOOP
+                    BTW unclosed loop
+                IM OUTTA YR OUTERLOOP2
+                """,
+
+                """
+                IM IN YR
+                    BTW without name
+                """,
+                """
+                IM OUTTA YR OUTERLOOP2
+                """
+        ).forEach(
+                code -> {
+                    givenSourceCode(code);
+                    System.out.println(code);
+
+                    assertThatThrownBy(this::whenLex)
+                            .isInstanceOf(IllegalArgumentException.class);
+                }
+        );
+    }
+
 
     private void givenSourceCode(String code) {
         sourceCode = new TestSourceCode(code);
