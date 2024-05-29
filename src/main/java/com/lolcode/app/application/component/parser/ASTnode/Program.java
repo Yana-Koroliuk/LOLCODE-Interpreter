@@ -10,6 +10,9 @@ import java.util.List;
 public class Program extends ASTNode {
     private List<ASTNode> body;
 
+    public Program() {
+    }
+
     public Program(List<ASTNode> body) {
         super(ParseType.PROGRAM);
         this.body = body;
