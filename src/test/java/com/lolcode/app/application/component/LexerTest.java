@@ -21,7 +21,16 @@ class LexerTest {
 
     private SourceCode sourceCode;
     private Tokens tokens;
+    
+    @ParameterizedTest
+    @MethodSource("illegalHaiKthxbueDeclaration")
+    void lexShouldThrowIfProcedureIsNonOpenedOrClosed(String code) {
+        givenSourceCode(code);
 
+        assertThatThrownBy(this::whenLex)
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
     @Test
     void lexVariables() throws JsonProcessingException {
         givenSourceCode("""
@@ -91,6 +100,8 @@ class LexerTest {
                 I HAS A BOOL1 ITZ BOTH SAEM NUM1 AN 10      BTW BOOL1 буде WIN, якщо NUM1 дорівнює 10
                 I HAS A BOOL2 ITZ DIFFRINT NUM2 AN 20       BTW BOOL2 буде FAIL, якщо NUM2 дорівнює 20
                 I HAS A RESULT1 ITZ BOTH OF BOOL1 AN BOOL2         BTW WIN iff BOOL1=WIN, BOOL2=WIN
+                
+                KTHXBYE
                 """);
 
         whenLex();
@@ -379,7 +390,9 @@ class LexerTest {
                   { "type": "IDENTIFIER", "value": "BOOL1", "line": 55 },
                   { "type": "KEYWORD", "value": "AN", "line": 55 },
                   { "type": "IDENTIFIER", "value": "BOOL2", "line": 55 },
-                  { "type": "NEWLINE", "value": "\\n", "line": 55 }
+                  { "type": "NEWLINE", "value": "\\n", "line": 55 },
+                  { "type": "KEYWORD", "value": "KTHXBYE", "line": 56 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 56 }
                 ]
                 """
         );
@@ -388,6 +401,8 @@ class LexerTest {
     @Test
     void lexStatements() throws JsonProcessingException {
         givenSourceCode("""
+                HAI 1.2
+                
                 BTW Example: без else if
                 O RLY?
                   YA RLY
@@ -418,90 +433,97 @@ class LexerTest {
                     VISIBLE "YELLOW FISH"
                   OMGWTF
                     VISIBLE "FISH IS TRANSPARENT"
-                OIC    
+                OIC
+                
+                KTHXBYE 
                 """);
 
         whenLex();
 
         thenTokensAre("""
                 [
-                  { "type": "KEYWORD", "value": "O RLY?", "line": 1 },
+                  { "type": "KEYWORD", "value": "HAI", "line": 1 },
+                  { "type": "NUMBER", "value": "1.2", "line": 1 },
                   { "type": "NEWLINE", "value": "\\n", "line": 1 },
-                  { "type": "KEYWORD", "value": "YA RLY", "line": 2 },
+                  { "type": "KEYWORD", "value": "O RLY?", "line": 2 },
                   { "type": "NEWLINE", "value": "\\n", "line": 2 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 3 },
-                  { "type": "STRING", "value": "\\"It is true!\\"", "line": 3 },
+                  { "type": "KEYWORD", "value": "YA RLY", "line": 3 },
                   { "type": "NEWLINE", "value": "\\n", "line": 3 },
-                  { "type": "KEYWORD", "value": "NO WAI", "line": 4 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 4 },
+                  { "type": "STRING", "value": "\\"It is true!\\"", "line": 4 },
                   { "type": "NEWLINE", "value": "\\n", "line": 4 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 5 },
-                  { "type": "STRING", "value": "\\"It is false!\\"", "line": 5 },
+                  { "type": "KEYWORD", "value": "NO WAI", "line": 5 },
                   { "type": "NEWLINE", "value": "\\n", "line": 5 },
-                  { "type": "KEYWORD", "value": "OIC", "line": 6 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 6 },
+                  { "type": "STRING", "value": "\\"It is false!\\"", "line": 6 },
                   { "type": "NEWLINE", "value": "\\n", "line": 6 },
-                  { "type": "KEYWORD", "value": "I HAS A", "line": 7 },
-                  { "type": "IDENTIFIER", "value": "NUM0", "line": 7 },
-                  { "type": "KEYWORD", "value": "ITZ", "line": 7 },
-                  { "type": "NUMBER", "value": 15, "line": 7 },
+                  { "type": "KEYWORD", "value": "OIC", "line": 7 },
                   { "type": "NEWLINE", "value": "\\n", "line": 7 },
-                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 8 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 8 },
                   { "type": "IDENTIFIER", "value": "NUM0", "line": 8 },
-                  { "type": "KEYWORD", "value": "AN", "line": 8 },
-                  { "type": "NUMBER", "value": 10, "line": 8 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 8 },
+                  { "type": "NUMBER", "value": 15, "line": 8 },
                   { "type": "NEWLINE", "value": "\\n", "line": 8 },
-                  { "type": "KEYWORD", "value": "O RLY?", "line": 9 },
+                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 9 },
+                  { "type": "IDENTIFIER", "value": "NUM0", "line": 9 },
+                  { "type": "KEYWORD", "value": "AN", "line": 9 },
+                  { "type": "NUMBER", "value": 10, "line": 9 },
                   { "type": "NEWLINE", "value": "\\n", "line": 9 },
-                  { "type": "KEYWORD", "value": "YA RLY", "line": 10 },
+                  { "type": "KEYWORD", "value": "O RLY?", "line": 10 },
                   { "type": "NEWLINE", "value": "\\n", "line": 10 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 11 },
-                  { "type": "STRING", "value": "\\"NUM is 10\\"", "line": 11 },
+                  { "type": "KEYWORD", "value": "YA RLY", "line": 11 },
                   { "type": "NEWLINE", "value": "\\n", "line": 11 },
-                  { "type": "KEYWORD", "value": "MEBBE", "line": 12 },
-                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 12 },
-                  { "type": "IDENTIFIER", "value": "NUM0", "line": 12 },
-                  { "type": "KEYWORD", "value": "AN", "line": 12 },
-                  { "type": "NUMBER", "value": 15, "line": 12 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 12 },
+                  { "type": "STRING", "value": "\\"NUM is 10\\"", "line": 12 },
                   { "type": "NEWLINE", "value": "\\n", "line": 12 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 13 },
-                  { "type": "STRING", "value": "\\"NUM is 15\\"", "line": 13 },
+                  { "type": "KEYWORD", "value": "MEBBE", "line": 13 },
+                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 13 },
+                  { "type": "IDENTIFIER", "value": "NUM0", "line": 13 },
+                  { "type": "KEYWORD", "value": "AN", "line": 13 },
+                  { "type": "NUMBER", "value": 15, "line": 13 },
                   { "type": "NEWLINE", "value": "\\n", "line": 13 },
-                  { "type": "KEYWORD", "value": "NO WAI", "line": 14 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 14 },
+                  { "type": "STRING", "value": "\\"NUM is 15\\"", "line": 14 },
                   { "type": "NEWLINE", "value": "\\n", "line": 14 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 15 },
-                  { "type": "STRING", "value": "\\"NUM is something else\\"", "line": 15 },
+                  { "type": "KEYWORD", "value": "NO WAI", "line": 15 },
                   { "type": "NEWLINE", "value": "\\n", "line": 15 },
-                  { "type": "KEYWORD", "value": "OIC", "line": 16 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 16 },
+                  { "type": "STRING", "value": "\\"NUM is something else\\"", "line": 16 },
                   { "type": "NEWLINE", "value": "\\n", "line": 16 },
-                  { "type": "KEYWORD", "value": "I HAS A", "line": 17 },
-                  { "type": "IDENTIFIER", "value": "STR0", "line": 17 },
-                  { "type": "KEYWORD", "value": "ITZ", "line": 17 },
-                  { "type": "STRING", "value": "\\"R\\"", "line": 17 },
+                  { "type": "KEYWORD", "value": "OIC", "line": 17 },
                   { "type": "NEWLINE", "value": "\\n", "line": 17 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 18 },
                   { "type": "IDENTIFIER", "value": "STR0", "line": 18 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 18 },
+                  { "type": "STRING", "value": "\\"R\\"", "line": 18 },
                   { "type": "NEWLINE", "value": "\\n", "line": 18 },
-                  { "type": "KEYWORD", "value": "WTF?", "line": 19 },
+                  { "type": "IDENTIFIER", "value": "STR0", "line": 19 },
                   { "type": "NEWLINE", "value": "\\n", "line": 19 },
-                  { "type": "KEYWORD", "value": "OMG", "line": 20 },
-                  { "type": "STRING", "value": "\\"R\\"", "line": 20 },
+                  { "type": "KEYWORD", "value": "WTF?", "line": 20 },
                   { "type": "NEWLINE", "value": "\\n", "line": 20 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 21 },
-                  { "type": "STRING", "value": "\\"RED FISH\\"", "line": 21 },
+                  { "type": "KEYWORD", "value": "OMG", "line": 21 },
+                  { "type": "STRING", "value": "\\"R\\"", "line": 21 },
                   { "type": "NEWLINE", "value": "\\n", "line": 21 },
-                  { "type": "KEYWORD", "value": "GTFO", "line": 22 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 22 },
+                  { "type": "STRING", "value": "\\"RED FISH\\"", "line": 22 },
                   { "type": "NEWLINE", "value": "\\n", "line": 22 },
-                  { "type": "KEYWORD", "value": "OMG", "line": 23 },
-                  { "type": "STRING", "value": "\\"Y\\"", "line": 23 },
+                  { "type": "KEYWORD", "value": "GTFO", "line": 23 },
                   { "type": "NEWLINE", "value": "\\n", "line": 23 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 24 },
-                  { "type": "STRING", "value": "\\"YELLOW FISH\\"", "line": 24 },
+                  { "type": "KEYWORD", "value": "OMG", "line": 24 },
+                  { "type": "STRING", "value": "\\"Y\\"", "line": 24 },
                   { "type": "NEWLINE", "value": "\\n", "line": 24 },
-                  { "type": "KEYWORD", "value": "OMGWTF", "line": 25 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 25 },
+                  { "type": "STRING", "value": "\\"YELLOW FISH\\"", "line": 25 },
                   { "type": "NEWLINE", "value": "\\n", "line": 25 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 26 },
-                  { "type": "STRING", "value": "\\"FISH IS TRANSPARENT\\"", "line": 26 },
+                  { "type": "KEYWORD", "value": "OMGWTF", "line": 26 },
                   { "type": "NEWLINE", "value": "\\n", "line": 26 },
-                  { "type": "KEYWORD", "value": "OIC", "line": 27 },
-                  { "type": "NEWLINE", "value": "\\n", "line": 27 }
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 27 },
+                  { "type": "STRING", "value": "\\"FISH IS TRANSPARENT\\"", "line": 27 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 27 },
+                  { "type": "KEYWORD", "value": "OIC", "line": 28 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 28 },
+                  { "type": "KEYWORD", "value": "KTHXBYE", "line": 29 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 29 }
                 ]
                 """
         );
@@ -510,6 +532,8 @@ class LexerTest {
     @Test
     void lexLoopStatements() throws JsonProcessingException {
         givenSourceCode("""
+                HAI 1.2
+                
                 IM IN YR LOOP
                   VISIBLE "Looping..."
                   GTFO
@@ -530,80 +554,87 @@ class LexerTest {
                   VISIBLE "End of inner loop"
                   GTFO
                 IM OUTTA YR OUTERLOOP
+                
+                KTHXBYE
                 """);
 
         whenLex();
 
         thenTokensAre("""
                 [
-                  { "type": "KEYWORD", "value": "IM IN YR", "line": 1 },
-                  { "type": "IDENTIFIER", "value": "LOOP", "line": 1 },
+                  { "type": "KEYWORD", "value": "HAI", "line": 1 },
+                  { "type": "NUMBER", "value": 1.2, "line": 1 },
                   { "type": "NEWLINE", "value": "\\n", "line": 1 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 2 },
-                  { "type": "STRING", "value": "\\"Looping...\\"", "line": 2 },
+                  { "type": "KEYWORD", "value": "IM IN YR", "line": 2 },
+                  { "type": "IDENTIFIER", "value": "LOOP", "line": 2 },
                   { "type": "NEWLINE", "value": "\\n", "line": 2 },
-                  { "type": "KEYWORD", "value": "GTFO", "line": 3 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 3 },
+                  { "type": "STRING", "value": "\\"Looping...\\"", "line": 3 },
                   { "type": "NEWLINE", "value": "\\n", "line": 3 },
-                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 4 },
-                  { "type": "IDENTIFIER", "value": "LOOP", "line": 4 },
+                  { "type": "KEYWORD", "value": "GTFO", "line": 4 },
                   { "type": "NEWLINE", "value": "\\n", "line": 4 },
-                  { "type": "KEYWORD", "value": "IM IN YR", "line": 5 },
+                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 5 },
                   { "type": "IDENTIFIER", "value": "LOOP", "line": 5 },
-                  { "type": "KEYWORD", "value": "UPPIN", "line": 5 },
-                  { "type": "KEYWORD", "value": "YR", "line": 5 },
-                  { "type": "IDENTIFIER", "value": "VAR", "line": 5 },
-                  { "type": "KEYWORD", "value": "TIL", "line": 5 },
-                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 5 },
-                  { "type": "IDENTIFIER", "value": "VAR", "line": 5 },
-                  { "type": "KEYWORD", "value": "AN", "line": 5 },
-                  { "type": "NUMBER", "value": 10, "line": 5 },
                   { "type": "NEWLINE", "value": "\\n", "line": 5 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 6 },
+                  { "type": "KEYWORD", "value": "IM IN YR", "line": 6 },
+                  { "type": "IDENTIFIER", "value": "LOOP", "line": 6 },
+                  { "type": "KEYWORD", "value": "UPPIN", "line": 6 },
+                  { "type": "KEYWORD", "value": "YR", "line": 6 },
                   { "type": "IDENTIFIER", "value": "VAR", "line": 6 },
+                  { "type": "KEYWORD", "value": "TIL", "line": 6 },
+                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 6 },
+                  { "type": "IDENTIFIER", "value": "VAR", "line": 6 },
+                  { "type": "KEYWORD", "value": "AN", "line": 6 },
+                  { "type": "NUMBER", "value": 10, "line": 6 },
                   { "type": "NEWLINE", "value": "\\n", "line": 6 },
-                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 7 },
-                  { "type": "IDENTIFIER", "value": "LOOP", "line": 7 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 7 },
+                  { "type": "IDENTIFIER", "value": "VAR", "line": 7 },
                   { "type": "NEWLINE", "value": "\\n", "line": 7 },
-                  { "type": "KEYWORD", "value": "I HAS A", "line": 8 },
-                  { "type": "IDENTIFIER", "value": "COUNT", "line": 8 },
-                  { "type": "KEYWORD", "value": "ITZ", "line": 8 },
-                  { "type": "NUMBER", "value": 0, "line": 8 },
+                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 8 },
+                  { "type": "IDENTIFIER", "value": "LOOP", "line": 8 },
                   { "type": "NEWLINE", "value": "\\n", "line": 8 },
-                  { "type": "KEYWORD", "value": "IM IN YR", "line": 9 },
-                  { "type": "IDENTIFIER", "value": "OUTERLOOP", "line": 9 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 9 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 9 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 9 },
+                  { "type": "NUMBER", "value": 0, "line": 9 },
                   { "type": "NEWLINE", "value": "\\n", "line": 9 },
                   { "type": "KEYWORD", "value": "IM IN YR", "line": 10 },
-                  { "type": "IDENTIFIER", "value": "INNERLOOP", "line": 10 },
+                  { "type": "IDENTIFIER", "value": "OUTERLOOP", "line": 10 },
                   { "type": "NEWLINE", "value": "\\n", "line": 10 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 11 },
-                  { "type": "STRING", "value": "\\"Outer loop count: \\"", "line": 11 },
-                  { "type": "KEYWORD", "value": "AN", "line": 11 },
-                  { "type": "IDENTIFIER", "value": "COUNT", "line": 11 },
+                  { "type": "KEYWORD", "value": "IM IN YR", "line": 11 },
+                  { "type": "IDENTIFIER", "value": "INNERLOOP", "line": 11 },
                   { "type": "NEWLINE", "value": "\\n", "line": 11 },
-                  { "type": "IDENTIFIER", "value": "COUNT", "line": 12 },
-                  { "type": "KEYWORD", "value": "R", "line": 12 },
-                  { "type": "KEYWORD", "value": "SUM OF", "line": 12 },
-                  { "type": "IDENTIFIER", "value": "COUNT", "line": 12 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 12 },
+                  { "type": "STRING", "value": "\\"Outer loop count: \\"", "line": 12 },
                   { "type": "KEYWORD", "value": "AN", "line": 12 },
-                  { "type": "NUMBER", "value": 1, "line": 12 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 12 },
                   { "type": "NEWLINE", "value": "\\n", "line": 12 },
-                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 13 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 13 },
+                  { "type": "KEYWORD", "value": "R", "line": 13 },
+                  { "type": "KEYWORD", "value": "SUM OF", "line": 13 },
                   { "type": "IDENTIFIER", "value": "COUNT", "line": 13 },
                   { "type": "KEYWORD", "value": "AN", "line": 13 },
-                  { "type": "NUMBER", "value": 3, "line": 13 },
-                  { "type": "KEYWORD", "value": "GTFO", "line": 13 },
+                  { "type": "NUMBER", "value": 1, "line": 13 },
                   { "type": "NEWLINE", "value": "\\n", "line": 13 },
-                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 14 },
-                  { "type": "IDENTIFIER", "value": "INNERLOOP", "line": 14 },
+                  { "type": "KEYWORD", "value": "BOTH SAEM", "line": 14 },
+                  { "type": "IDENTIFIER", "value": "COUNT", "line": 14 },
+                  { "type": "KEYWORD", "value": "AN", "line": 14 },
+                  { "type": "NUMBER", "value": 3, "line": 14 },
+                  { "type": "KEYWORD", "value": "GTFO", "line": 14 },
                   { "type": "NEWLINE", "value": "\\n", "line": 14 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 15 },
-                  { "type": "STRING", "value": "\\"End of inner loop\\"", "line": 15 },
+                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 15 },
+                  { "type": "IDENTIFIER", "value": "INNERLOOP", "line": 15 },
                   { "type": "NEWLINE", "value": "\\n", "line": 15 },
-                  { "type": "KEYWORD", "value": "GTFO", "line": 16 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 16 },
+                  { "type": "STRING", "value": "\\"End of inner loop\\"", "line": 16 },
                   { "type": "NEWLINE", "value": "\\n", "line": 16 },
-                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 17 },
-                  { "type": "IDENTIFIER", "value": "OUTERLOOP", "line": 17 },
-                  { "type": "NEWLINE", "value": "\\n", "line": 17 }
+                  { "type": "KEYWORD", "value": "GTFO", "line": 17 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 17 },
+                  { "type": "KEYWORD", "value": "IM OUTTA YR", "line": 18 },
+                  { "type": "IDENTIFIER", "value": "OUTERLOOP", "line": 18 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 18 },
+                  { "type": "KEYWORD", "value": "KTHXBYE", "line": 19 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 19 }
                 ]
                 """);
     }
@@ -611,6 +642,8 @@ class LexerTest {
     @Test
     void lexFunctions() throws JsonProcessingException {
         givenSourceCode("""
+                HAI 1.2
+                
                 BTW Функція з двома аргументами
                 HOW IZ I FUNC YR ARG1 AN YR ARG2
                   VISIBLE ARG1
@@ -646,136 +679,143 @@ class LexerTest {
                 IF U SAY SO
                                 
                 I IZ FUNC1 YR "Outer call" MKAY
+                
+                KTHXBYE
                 """);
 
         whenLex();
 
         thenTokensAre("""
                 [
-                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 1 },
-                  { "type": "IDENTIFIER", "value": "FUNC", "line": 1 },
-                  { "type": "KEYWORD", "value": "YR", "line": 1 },
-                  { "type": "IDENTIFIER", "value": "ARG1", "line": 1 },
-                  { "type": "KEYWORD", "value": "AN", "line": 1 },
-                  { "type": "KEYWORD", "value": "YR", "line": 1 },
-                  { "type": "IDENTIFIER", "value": "ARG2", "line": 1 },
+                  { "type": "KEYWORD", "value": "HAI", "line": 1 },
+                  { "type": "NUMBER", "value": 1.2, "line": 1 },
                   { "type": "NEWLINE", "value": "\\n", "line": 1 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 2 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 2 },
+                  { "type": "IDENTIFIER", "value": "FUNC", "line": 2 },
+                  { "type": "KEYWORD", "value": "YR", "line": 2 },
                   { "type": "IDENTIFIER", "value": "ARG1", "line": 2 },
+                  { "type": "KEYWORD", "value": "AN", "line": 2 },
+                  { "type": "KEYWORD", "value": "YR", "line": 2 },
+                  { "type": "IDENTIFIER", "value": "ARG2", "line": 2 },
                   { "type": "NEWLINE", "value": "\\n", "line": 2 },
                   { "type": "KEYWORD", "value": "VISIBLE", "line": 3 },
-                  { "type": "IDENTIFIER", "value": "ARG2", "line": 3 },
+                  { "type": "IDENTIFIER", "value": "ARG1", "line": 3 },
                   { "type": "NEWLINE", "value": "\\n", "line": 3 },
-                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 4 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 4 },
+                  { "type": "IDENTIFIER", "value": "ARG2", "line": 4 },
                   { "type": "NEWLINE", "value": "\\n", "line": 4 },
-                  { "type": "KEYWORD", "value": "I IZ", "line": 5 },
-                  { "type": "IDENTIFIER", "value": "FUNC", "line": 5 },
-                  { "type": "KEYWORD", "value": "YR", "line": 5 },
-                  { "type": "STRING", "value": "\\"Hello\\"", "line": 5 },
-                  { "type": "KEYWORD", "value": "AN", "line": 5 },
-                  { "type": "KEYWORD", "value": "YR", "line": 5 },
-                  { "type": "STRING", "value": "\\"World\\"", "line": 5 },
-                  { "type": "KEYWORD", "value": "MKAY", "line": 5 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 5 },
                   { "type": "NEWLINE", "value": "\\n", "line": 5 },
-                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 6 },
-                  { "type": "IDENTIFIER", "value": "ADD", "line": 6 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 6 },
+                  { "type": "IDENTIFIER", "value": "FUNC", "line": 6 },
                   { "type": "KEYWORD", "value": "YR", "line": 6 },
-                  { "type": "IDENTIFIER", "value": "A1", "line": 6 },
+                  { "type": "STRING", "value": "\\"Hello\\"", "line": 6 },
                   { "type": "KEYWORD", "value": "AN", "line": 6 },
                   { "type": "KEYWORD", "value": "YR", "line": 6 },
-                  { "type": "IDENTIFIER", "value": "B", "line": 6 },
+                  { "type": "STRING", "value": "\\"World\\"", "line": 6 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 6 },
                   { "type": "NEWLINE", "value": "\\n", "line": 6 },
-                  { "type": "KEYWORD", "value": "FOUND YR", "line": 7 },
-                  { "type": "KEYWORD", "value": "SUM OF", "line": 7 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 7 },
+                  { "type": "IDENTIFIER", "value": "ADD", "line": 7 },
+                  { "type": "KEYWORD", "value": "YR", "line": 7 },
                   { "type": "IDENTIFIER", "value": "A1", "line": 7 },
                   { "type": "KEYWORD", "value": "AN", "line": 7 },
+                  { "type": "KEYWORD", "value": "YR", "line": 7 },
                   { "type": "IDENTIFIER", "value": "B", "line": 7 },
                   { "type": "NEWLINE", "value": "\\n", "line": 7 },
-                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 8 },
+                  { "type": "KEYWORD", "value": "FOUND YR", "line": 8 },
+                  { "type": "KEYWORD", "value": "SUM OF", "line": 8 },
+                  { "type": "IDENTIFIER", "value": "A1", "line": 8 },
+                  { "type": "KEYWORD", "value": "AN", "line": 8 },
+                  { "type": "IDENTIFIER", "value": "B", "line": 8 },
                   { "type": "NEWLINE", "value": "\\n", "line": 8 },
-                  { "type": "KEYWORD", "value": "I HAS A", "line": 9 },
-                  { "type": "IDENTIFIER", "value": "RESULT", "line": 9 },
-                  { "type": "KEYWORD", "value": "ITZ", "line": 9 },
-                  { "type": "KEYWORD", "value": "I IZ", "line": 9 },
-                  { "type": "IDENTIFIER", "value": "ADD", "line": 9 },
-                  { "type": "KEYWORD", "value": "YR", "line": 9 },
-                  { "type": "NUMBER", "value": 5, "line": 9 },
-                  { "type": "KEYWORD", "value": "AN", "line": 9 },
-                  { "type": "KEYWORD", "value": "YR", "line": 9 },
-                  { "type": "NUMBER", "value": 10, "line": 9 },
-                  { "type": "KEYWORD", "value": "MKAY", "line": 9 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 9 },
                   { "type": "NEWLINE", "value": "\\n", "line": 9 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 10 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 10 },
                   { "type": "IDENTIFIER", "value": "RESULT", "line": 10 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 10 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 10 },
+                  { "type": "IDENTIFIER", "value": "ADD", "line": 10 },
+                  { "type": "KEYWORD", "value": "YR", "line": 10 },
+                  { "type": "NUMBER", "value": 5, "line": 10 },
+                  { "type": "KEYWORD", "value": "AN", "line": 10 },
+                  { "type": "KEYWORD", "value": "YR", "line": 10 },
+                  { "type": "NUMBER", "value": 10, "line": 10 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 10 },
                   { "type": "NEWLINE", "value": "\\n", "line": 10 },
-                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 11 },
-                  { "type": "IDENTIFIER", "value": "ADD1", "line": 11 },
-                  { "type": "KEYWORD", "value": "YR", "line": 11 },
-                  { "type": "IDENTIFIER", "value": "A1", "line": 11 },
-                  { "type": "KEYWORD", "value": "AN", "line": 11 },
-                  { "type": "KEYWORD", "value": "YR", "line": 11 },
-                  { "type": "IDENTIFIER", "value": "B", "line": 11 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 11 },
+                  { "type": "IDENTIFIER", "value": "RESULT", "line": 11 },
                   { "type": "NEWLINE", "value": "\\n", "line": 11 },
-                  { "type": "KEYWORD", "value": "I HAS A", "line": 12 },
-                  { "type": "IDENTIFIER", "value": "RESULT", "line": 12 },
-                  { "type": "KEYWORD", "value": "ITZ", "line": 12 },
-                  { "type": "KEYWORD", "value": "SUM OF", "line": 12 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 12 },
+                  { "type": "IDENTIFIER", "value": "ADD1", "line": 12 },
+                  { "type": "KEYWORD", "value": "YR", "line": 12 },
                   { "type": "IDENTIFIER", "value": "A1", "line": 12 },
                   { "type": "KEYWORD", "value": "AN", "line": 12 },
+                  { "type": "KEYWORD", "value": "YR", "line": 12 },
                   { "type": "IDENTIFIER", "value": "B", "line": 12 },
                   { "type": "NEWLINE", "value": "\\n", "line": 12 },
-                  { "type": "KEYWORD", "value": "FOUND YR", "line": 13 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 13 },
                   { "type": "IDENTIFIER", "value": "RESULT", "line": 13 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 13 },
+                  { "type": "KEYWORD", "value": "SUM OF", "line": 13 },
+                  { "type": "IDENTIFIER", "value": "A1", "line": 13 },
+                  { "type": "KEYWORD", "value": "AN", "line": 13 },
+                  { "type": "IDENTIFIER", "value": "B", "line": 13 },
                   { "type": "NEWLINE", "value": "\\n", "line": 13 },
-                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 14 },
+                  { "type": "KEYWORD", "value": "FOUND YR", "line": 14 },
+                  { "type": "IDENTIFIER", "value": "RESULT", "line": 14 },
                   { "type": "NEWLINE", "value": "\\n", "line": 14 },
-                  { "type": "KEYWORD", "value": "I HAS A", "line": 15 },
-                  { "type": "IDENTIFIER", "value": "RESULT0", "line": 15 },
-                  { "type": "KEYWORD", "value": "ITZ", "line": 15 },
-                  { "type": "KEYWORD", "value": "I IZ", "line": 15 },
-                  { "type": "IDENTIFIER", "value": "ADD1", "line": 15 },
-                  { "type": "KEYWORD", "value": "YR", "line": 15 },
-                  { "type": "NUMBER", "value": 5, "line": 15 },
-                  { "type": "KEYWORD", "value": "AN", "line": 15 },
-                  { "type": "KEYWORD", "value": "YR", "line": 15 },
-                  { "type": "NUMBER", "value": 10, "line": 15 },
-                  { "type": "KEYWORD", "value": "MKAY", "line": 15 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 15 },
                   { "type": "NEWLINE", "value": "\\n", "line": 15 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 16 },
+                  { "type": "KEYWORD", "value": "I HAS A", "line": 16 },
                   { "type": "IDENTIFIER", "value": "RESULT0", "line": 16 },
+                  { "type": "KEYWORD", "value": "ITZ", "line": 16 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 16 },
+                  { "type": "IDENTIFIER", "value": "ADD1", "line": 16 },
+                  { "type": "KEYWORD", "value": "YR", "line": 16 },
+                  { "type": "NUMBER", "value": 5, "line": 16 },
+                  { "type": "KEYWORD", "value": "AN", "line": 16 },
+                  { "type": "KEYWORD", "value": "YR", "line": 16 },
+                  { "type": "NUMBER", "value": 10, "line": 16 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 16 },
                   { "type": "NEWLINE", "value": "\\n", "line": 16 },
-                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 17 },
-                  { "type": "IDENTIFIER", "value": "FUNC2", "line": 17 },
-                  { "type": "KEYWORD", "value": "YR", "line": 17 },
-                  { "type": "IDENTIFIER", "value": "ARG2", "line": 17 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 17 },
+                  { "type": "IDENTIFIER", "value": "RESULT0", "line": 17 },
                   { "type": "NEWLINE", "value": "\\n", "line": 17 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 18 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 18 },
+                  { "type": "IDENTIFIER", "value": "FUNC2", "line": 18 },
+                  { "type": "KEYWORD", "value": "YR", "line": 18 },
                   { "type": "IDENTIFIER", "value": "ARG2", "line": 18 },
                   { "type": "NEWLINE", "value": "\\n", "line": 18 },
-                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 19 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 19 },
+                  { "type": "IDENTIFIER", "value": "ARG2", "line": 19 },
                   { "type": "NEWLINE", "value": "\\n", "line": 19 },
-                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 20 },
-                  { "type": "IDENTIFIER", "value": "FUNC1", "line": 20 },
-                  { "type": "KEYWORD", "value": "YR", "line": 20 },
-                  { "type": "IDENTIFIER", "value": "ARG1", "line": 20 },
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 20 },
                   { "type": "NEWLINE", "value": "\\n", "line": 20 },
-                  { "type": "KEYWORD", "value": "VISIBLE", "line": 21 },
+                  { "type": "KEYWORD", "value": "HOW IZ I", "line": 21 },
+                  { "type": "IDENTIFIER", "value": "FUNC1", "line": 21 },
+                  { "type": "KEYWORD", "value": "YR", "line": 21 },
                   { "type": "IDENTIFIER", "value": "ARG1", "line": 21 },
                   { "type": "NEWLINE", "value": "\\n", "line": 21 },
-                  { "type": "KEYWORD", "value": "I IZ", "line": 22 },
-                  { "type": "IDENTIFIER", "value": "FUNC2", "line": 22 },
-                  { "type": "KEYWORD", "value": "YR", "line": 22 },
-                  { "type": "STRING", "value": "\\"Inner call\\"", "line": 22 },
-                  { "type": "KEYWORD", "value": "MKAY", "line": 22 },
+                  { "type": "KEYWORD", "value": "VISIBLE", "line": 22 },
+                  { "type": "IDENTIFIER", "value": "ARG1", "line": 22 },
                   { "type": "NEWLINE", "value": "\\n", "line": 22 },
-                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 23 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 23 },
+                  { "type": "IDENTIFIER", "value": "FUNC2", "line": 23 },
+                  { "type": "KEYWORD", "value": "YR", "line": 23 },
+                  { "type": "STRING", "value": "\\"Inner call\\"", "line": 23 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 23 },
                   { "type": "NEWLINE", "value": "\\n", "line": 23 },
-                  { "type": "KEYWORD", "value": "I IZ", "line": 24 },
-                  { "type": "IDENTIFIER", "value": "FUNC1", "line": 24 },
-                  { "type": "KEYWORD", "value": "YR", "line": 24 },
-                  { "type": "STRING", "value": "\\"Outer call\\"", "line": 24 },
-                  { "type": "KEYWORD", "value": "MKAY", "line": 24 },
-                  { "type": "NEWLINE", "value": "\\n", "line": 24 }
+                  { "type": "KEYWORD", "value": "IF U SAY SO", "line": 24 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 24 },
+                  { "type": "KEYWORD", "value": "I IZ", "line": 25 },
+                  { "type": "IDENTIFIER", "value": "FUNC1", "line": 25 },
+                  { "type": "KEYWORD", "value": "YR", "line": 25 },
+                  { "type": "STRING", "value": "\\"Outer call\\"", "line": 25 },
+                  { "type": "KEYWORD", "value": "MKAY", "line": 25 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 25 },
+                  { "type": "KEYWORD", "value": "KTHXBYE", "line": 26 },
+                  { "type": "NEWLINE", "value": "\\n", "line": 26 }
                 ]
                 """);
     }
@@ -808,7 +848,7 @@ class LexerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("factory")
+    @MethodSource("illegalTokensDeclaration")
     void lexShouldThrowIfTokensAreInvalid(String code) {
         givenSourceCode(code);
         System.out.println(code);
@@ -816,8 +856,23 @@ class LexerTest {
         assertThatThrownBy(this::whenLex)
                 .isInstanceOf(IllegalArgumentException.class);
     }
+    
+    static Stream<String> illegalHaiKthxbueDeclaration() {
+        return Stream.of("""     
+                I HAS A VAR             BTW wasnt open
+                """, """
+                HAI 1.2                 BTW wasnt closed
+                
+                I HAS A VAR
+                """, """
+                I HAS A VAR             BTW wasnt open
+                
+                KTHXBYE
+                """
+        );
+    }
 
-    static Stream<String> factory() {
+    static Stream<String> illegalTokensDeclaration() {
         return Stream.of(
                 "HAI",
                 "HAI ",
@@ -825,6 +880,7 @@ class LexerTest {
 
                 "I HAS A",
                 "I HAS A ",
+                "I HAS A 123VAR",
 
                 "ITZ",
                 "I HAS A VARNAME ITZ",
@@ -850,7 +906,11 @@ class LexerTest {
                         """,
                 """
                         IM OUTTA YR OUTERLOOP2
-                        """
+                        """,
+
+                "VISIBLE",
+
+                "SUM OF 1"
         );
     }
 

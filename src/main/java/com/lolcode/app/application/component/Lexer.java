@@ -31,11 +31,13 @@ public class Lexer {
     private static final Map<String, String> tokenValidators = Map.of(
             "HAI", "HAI 1\\.2",
             "GIMMEH", "GIMMEH \\w+",
-            "I HAS A", "I HAS A(?= \\w+)",
-            "ITZ", "I HAS A \\w+ ITZ (\\w+|\\\"\\w+\\\"|\\d+)",
+            "I HAS A", "I HAS A [a-zA-Z]",
+            "ITZ", "I HAS A [a-zA-Z]\\w* ITZ (\\w+|\\\"\\w+\\\"|\\d+)",
             "GTFO", "(^ *|[^\\w ]|, )GTFO(?! *\\w)",
             "IM IN YR", "(^ *|[^\\w ]|, )IM IN YR \\w+",
-            "IM OUTTA YR", "(^ *|[^\\w ]|, )IM OUTTA YR \\w+"
+            "IM OUTTA YR", "(^ *|[^\\w ]|, )IM OUTTA YR \\w+",
+            "VISIBLE", "VISIBLE (\\w+|\\\".+\\\"|\\d+)",
+            "SUM OF", "SUM OF \\w+ AN \\w+"
     );
 
     private Matcher matcher;
@@ -46,10 +48,27 @@ public class Lexer {
         
         int lineCounter = 1;
         boolean comment = false;
+        boolean start = false;
         List<String> loops = new ArrayList<>();
 
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
+            
+            if (line.contains("HAI")) {
+                start = true;
+            }
+            if (line.contains("KTHXBYE")) {
+                if (!start) {
+                    throw new IllegalArgumentException("KTHXBYE without HAI");
+                }
+                start = false;
+                tokens.add(new Token(Type.KEYWORD, "KTHXBYE", lineCounter));
+                tokens.add(new Token(Type.NEWLINE, "\n", lineCounter++));
+                continue;
+            }
+            if (start && i == lines.size() - 1) {
+                throw new IllegalArgumentException("Unclosed HAI/KTHXBYE block");
+            }
             
             // check comments
             if (line.contains("OBTW")) {
@@ -67,10 +86,18 @@ public class Lexer {
             if (line.contains("BTW")) {
                 line = line.substring(0, line.indexOf("BTW"));
             }
+
+
             if (comment || line.isBlank()) {
                 continue;
             }
-            
+            if (!start) {
+                throw new IllegalArgumentException(MessageFormat.format(
+                        "Illegal token outside of HAI/KTHXBYE block at line {0}: {1}",
+                        lineCounter, line
+                ));
+            }
+
             // check loops
             if (line.contains("IM IN YR")) {
                 Matcher loopMatcher = Pattern.compile("IM IN YR (\\w+)").matcher(line);
