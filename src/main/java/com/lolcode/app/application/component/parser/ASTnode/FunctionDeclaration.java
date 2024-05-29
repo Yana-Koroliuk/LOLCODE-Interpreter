@@ -1,5 +1,6 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
@@ -26,5 +27,11 @@ public class FunctionDeclaration extends ASTNode {
                 ", params=" + params +
                 ", body=" + body +
                 '}';
+    }
+
+    @Override
+    public Object interpret(Context context) {
+        context.put(name, this);
+        return null;
     }
 }

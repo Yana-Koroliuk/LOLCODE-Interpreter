@@ -1,5 +1,6 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
@@ -18,5 +19,10 @@ public class Return extends ASTNode {
         return "Return{" +
                 "value=" + value +
                 '}';
+    }
+
+    @Override
+    public Object interpret(Context context) {
+        return value.interpret(context);
     }
 }

@@ -1,5 +1,6 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
@@ -14,6 +15,12 @@ public class EndProgram extends ASTNode {
     @Override
     public String toString() {
         return "EndProgram{}";
+    }
+
+    @Override
+    public Object interpret(Context context) {
+        System.exit(0);
+        return null;
     }
 }
 

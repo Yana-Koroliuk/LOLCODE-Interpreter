@@ -1,5 +1,6 @@
 package com.lolcode.app.application.component.parser.ASTnode;
 
+import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
@@ -21,5 +22,15 @@ public class Assignment extends ASTNode {
                 "variable='" + variable + '\'' +
                 ", value=" + value +
                 '}';
+    }
+
+    @Override
+    public Object interpret(Context context) {
+        Object value = this.value.interpret(context);
+
+        context.put(variable, value);
+        context.put("IT", value);
+
+        return value;
     }
 }
