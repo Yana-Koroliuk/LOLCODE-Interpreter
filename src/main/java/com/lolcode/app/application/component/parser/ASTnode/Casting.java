@@ -28,21 +28,31 @@ public class Casting extends ASTNode {
     public Object interpret(Context context) {
         Object interpretedValue = this.value.interpret(context);
 
-        Object castedValue;
         try {
-            castedValue = switch (castTo) {
-                case "NUMBR" -> ((Number) interpretedValue).intValue();
-                case "NUMBAR" -> ((Number) interpretedValue).doubleValue();
-                case "YARN" -> String.valueOf(interpretedValue);
-                case "TROOF" -> (Boolean) interpretedValue;
+            switch (castTo) {
+                case "NUMBR" -> {
+                    return Integer.parseInt(interpretedValue.toString());
+                }
+                case "NUMBAR" -> {
+                    return Double.parseDouble(interpretedValue.toString());
+                }
+                case "YARN" -> {
+                    return String.valueOf(interpretedValue);
+                }
+                case "TROOF" -> {
+                    if (interpretedValue.equals("WIN")) return true;
+                    else if (interpretedValue.equals("FAIL")) return false;
+                }
+                case "NOOB" -> {
+                    return null;
+                }
                 default -> throw new IllegalArgumentException("Can't cast to " + castTo);
-            };
+            }
         }
         catch (ClassCastException e) {
             throw new RuntimeException("Can't cast '" + interpretedValue + "' to " + castTo + ".");
         }
-
-        return castedValue;
+        return null;
     }
 }
 
