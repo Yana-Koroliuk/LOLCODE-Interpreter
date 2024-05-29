@@ -31,7 +31,8 @@ public class Casting extends ASTNode {
         try {
             switch (castTo) {
                 case "NUMBR" -> {
-                    int value = Integer.parseInt(interpretedValue.toString());
+                    double intermediateValue = Double.parseDouble(interpretedValue.toString());
+                    int value = (int) intermediateValue;
                     context.put("IT", value);
                     return value;
                 }
