@@ -3,7 +3,7 @@ package com.lolcode.app.config;
 import com.lolcode.app.application.VirtualMachine;
 import com.lolcode.app.application.component.Interpreter;
 import com.lolcode.app.application.component.Lexer;
-import com.lolcode.app.application.component.Parser;
+import com.lolcode.app.application.component.parser.Parser;
 
 public class VirtualMachineBuilder {
 
