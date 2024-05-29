@@ -33,17 +33,25 @@ public class Switch extends ASTNode {
     public Object interpret(Context context) {
         Object conditionValue = condition.interpret(context);
         Object caseResult = null;
-        boolean caseExecuted = false;
 
-        for (Case caseObj : cases) {
-            if (caseObj.getValue().interpret(context).equals(conditionValue)) {
-                caseResult = caseObj.interpret(context);
-                caseExecuted = true;
-                if (caseResult == Break.BREAK) break;
+        Integer firstTrueCaseIndex = null;
+
+        for (int i = 0; i < cases.size(); i++) {
+            if (cases.get(i).getValue().interpret(context).equals(conditionValue)) {
+                firstTrueCaseIndex = i;
+                break;
             }
         }
-        if (defaultCase != null && !caseExecuted) {
-            return defaultCase.interpret(context);
+
+        if (firstTrueCaseIndex != null) {
+            for (int i = firstTrueCaseIndex; i < cases.size(); i++) {
+                caseResult = cases.get(i).interpret(context);
+                if (caseResult == Break.BREAK) break;
+            }
+        } else {
+            if (defaultCase != null) {
+                return defaultCase.interpret(context);
+            }
         }
         return caseResult;
     }
