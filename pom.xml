@@ -39,7 +39,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit</groupId>
+            <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
