@@ -6,8 +6,10 @@ import com.lolcode.app.domain.SourceCode;
 import com.lolcode.app.domain.Tokens;
 import com.lolcode.app.test.model.TestSourceCode;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -645,9 +647,9 @@ class LexerTest {
                                 
                 I IZ FUNC1 YR "Outer call" MKAY
                 """);
-        
+
         whenLex();
-        
+
         thenTokensAre("""
                 [
                   { "type": "KEYWORD", "value": "HOW IZ I", "line": 1 },
@@ -788,9 +790,9 @@ class LexerTest {
                 TLDR
                 BTW oneline comment
                 """);
-        
+
         whenLex();
-        
+
         thenTokensAre("[]");
     }
 
@@ -804,10 +806,19 @@ class LexerTest {
 
         thenTokensAre("[]");
     }
-    
-    @Test
-    void lexShouldThrowIfTokensAreInvalid() {
-        List.of(
+
+    @ParameterizedTest
+    @MethodSource("factory")
+    void lexShouldThrowIfTokensAreInvalid(String code) {
+        givenSourceCode(code);
+        System.out.println(code);
+
+        assertThatThrownBy(this::whenLex)
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    static Stream<String> factory() {
+        return Stream.of(
                 "HAI",
                 "HAI ",
                 "HAI 1.3",
@@ -828,26 +839,18 @@ class LexerTest {
                 "var IM IN YR LOOPNAME",
 
                 """
-                IM IN YR OUTERLOOP
-                    BTW unclosed loop
-                IM OUTTA YR OUTERLOOP2
-                """,
+                        IM IN YR OUTERLOOP
+                            BTW unclosed loop
+                        IM OUTTA YR OUTERLOOP2
+                        """,
 
                 """
-                IM IN YR
-                    BTW without name
-                """,
+                        IM IN YR
+                            BTW without name
+                        """,
                 """
-                IM OUTTA YR OUTERLOOP2
-                """
-        ).forEach(
-                code -> {
-                    givenSourceCode(code);
-                    System.out.println(code);
-
-                    assertThatThrownBy(this::whenLex)
-                            .isInstanceOf(IllegalArgumentException.class);
-                }
+                        IM OUTTA YR OUTERLOOP2
+                        """
         );
     }
 
