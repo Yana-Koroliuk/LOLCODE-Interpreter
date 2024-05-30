@@ -684,4 +684,42 @@ public class InterpreterTest {
         assertEquals("NUM is something else", interpreter.getContext().get("RESULT"));
     }
 
+    @Test
+    void testFunctions() {
+        // function with return
+        ASTNode funcDeclaration = new FunctionDeclaration("ADD", List.of("A", "B"),
+                new Block(List.of(new VariableDeclaration("RESULT",
+                        new MathOperation("SUM OF", List.of(new Identifier("A"), new Identifier("B")))),
+                        new Return(new Identifier("RESULT")))
+                )
+        );
+        ASTNode funcCall = new FunctionCall("ADD",
+                List.of(new Literal("NUMBR", 5), new Literal("NUMBR", 10))
+        );
+        ASTNode varDeclaration = new VariableDeclaration("RESULT0", funcCall);
+        syntaxTree.getProgram().setBody(List.of(funcDeclaration, varDeclaration));
+        interpreter.interpret(syntaxTree);
+        assertEquals(15.0, interpreter.getContext().get("RESULT0"));
+
+
+        // nested function calls
+        ASTNode varDeclaration1 = new VariableDeclaration("VAR1", null);
+        ASTNode varDeclaration2 = new VariableDeclaration("VAR2", null);
+        ASTNode funcDecl1 = new FunctionDeclaration(
+                "FUNC2", List.of("ARG2"),
+                new Block(List.of(new Assignment("VAR2", new Identifier("ARG2"))))
+        );
+        ASTNode funcDecl2 = new FunctionDeclaration(
+                "FUNC1", List.of("ARG1"),
+                new Block(List.of(new Assignment("VAR1", new Identifier("ARG1")),
+                        new FunctionCall("FUNC2", List.of(new Literal("YARN", "Inner call")))))
+        );
+        funcCall = new FunctionCall("FUNC1", List.of(new Literal("YARN", "Outer call")));
+        interpreter = new Interpreter();
+        syntaxTree.getProgram().setBody(List.of(varDeclaration1, varDeclaration2, funcDecl1, funcDecl2, funcCall));
+        interpreter.interpret(syntaxTree);
+        assertEquals("Inner call", interpreter.getContext().get("VAR2"));
+        assertEquals("Outer call", interpreter.getContext().get("VAR1"));
+    }
+
 }
