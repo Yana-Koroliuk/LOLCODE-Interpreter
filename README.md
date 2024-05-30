@@ -8,7 +8,7 @@ This project provides a lexer, parser, and interpreter for a simple programming 
 > **NOTE:** You need to have Docker, Maven, and Java installed on your system to build, run, and test this application. Visit the following links to download and install:
 > - [Docker](https://www.docker.com/get-started)
 > - [Maven](https://maven.apache.org/install.html)
-> - [Java](https://www.java.com/en/download/)
+> - [Java (version 21)](https://www.java.com/en/download/)
 
 ## Installation
 
