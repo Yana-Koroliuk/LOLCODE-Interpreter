@@ -651,6 +651,37 @@ public class InterpreterTest {
         assertEquals(interpreter.getContext().get("NUM2"), 6.0);
     }
 
+    @Test
+    void testConditionals() {
+        // true branch
+        ASTNode varDeclaration1 = new VariableDeclaration("RESULT", new Literal("YARN", "result"));
+        ASTNode varDeclaration2 = new VariableDeclaration("NUM0", new Literal("NUMBR", 10));
+        ASTNode booleanOperation = new BooleanOperation("BOTH SAEM",
+                List.of(new Identifier("NUM0"), new Literal("NUMBR", 10)));
+        ASTNode conditional = new Conditional(new Identifier("IT"),
+                new Block(List.of(new Assignment("RESULT", new Literal("YARN", "NUM is 10")))),
+                List.of(new MebbeBranch(new BooleanOperation("BOTH SAEM",
+                        List.of(new Identifier("NUM0"), new Literal("NUMBR", 15))),
+                        new Block(List.of(new Assignment("RESULT", new Literal("YARN", "NUM is 15")))))),
+                new Block(List.of(new Assignment("RESULT", new Literal("YARN", "NUM is something else"))))
+                );
+        syntaxTree.getProgram().setBody(List.of(varDeclaration1, varDeclaration2, booleanOperation, conditional));
+        interpreter.interpret(syntaxTree);
+        assertEquals("NUM is 10", interpreter.getContext().get("RESULT"));
 
+        // MEBBE branch
+        interpreter = new Interpreter();
+        varDeclaration2 = new VariableDeclaration("NUM0", new Literal("NUMBR", 15));
+        syntaxTree.getProgram().setBody(List.of(varDeclaration1, varDeclaration2, booleanOperation, conditional));
+        interpreter.interpret(syntaxTree);
+        assertEquals("NUM is 15", interpreter.getContext().get("RESULT"));
+
+        // false branch
+        interpreter = new Interpreter();
+        varDeclaration2 = new VariableDeclaration("NUM0", new Literal("NUMBR", 20));
+        syntaxTree.getProgram().setBody(List.of(varDeclaration1, varDeclaration2, booleanOperation, conditional));
+        interpreter.interpret(syntaxTree);
+        assertEquals("NUM is something else", interpreter.getContext().get("RESULT"));
+    }
 
 }
