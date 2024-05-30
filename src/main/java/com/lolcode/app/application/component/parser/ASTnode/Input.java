@@ -27,7 +27,7 @@ public class Input extends ASTNode {
 
     @Override
     public Object interpret(Context context) {
-        String input = scanner.next();
+        String input = scanner.nextLine();
         if (name == null) {
             context.put("IT", input);
         } else {

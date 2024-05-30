@@ -1,6 +1,6 @@
 HAI 1.2
 
-I HAS A VAR            BTW VAR є nullінетипізований
+I HAS A VAR            BTW VAR є null інетипізований
 VAR
 VAR R "THREE"          BTW VAR тепер YARN і дорівнює "THREE"
 VAR R 3                BTW VAR2 тепер NUMBR і дорівнює 3
@@ -160,15 +160,6 @@ OBTW this is a long comment block
 TLDR
 
 I HAS A VARR, VARR R 10, VISIBLE VARR
-
-I HAS A ...
-VAR1
-
-VAR1 ...
-R 10
-
-VISIBLE ...
-VAR1
 
 KTHXBYE
 
