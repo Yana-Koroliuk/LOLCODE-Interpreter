@@ -567,6 +567,90 @@ public class InterpreterTest {
         assertNull(interpreter.getContext().get("VAR4"));
     }
 
+    @Test
+    void testLoops() {
+        // UPPIN LOOP
+        ASTNode varDeclaration = new VariableDeclaration("NUM",
+                new Literal("NUMBR", 0));
+        ASTNode loop = new Loop("LOOP", "UPPIN", new Identifier("VAR"),
+                new BooleanOperation("BOTH SAEM",
+                        List.of(new Identifier("VAR"), new Literal("NUMBR", 10))),
+                new Block(List.of(new Assignment("NUM",
+                        new MathOperation("SUM OF",
+                                List.of(new Identifier("NUM"), new Literal("NUMBR", 1)))))
+                )
+        );
+        syntaxTree.getProgram().setBody(List.of(varDeclaration, loop));
+        interpreter.interpret(syntaxTree);
+        assertEquals(interpreter.getContext().get("NUM"), 10.0);
+
+
+        // NERFIN LOOP
+        interpreter = new Interpreter();
+        varDeclaration = new VariableDeclaration("NUM",
+                new Literal("NUMBR", 10));
+        ASTNode variableDeclaration1 = new VariableDeclaration("VAR",
+                new Literal("NUMBR", 10));
+        loop = new Loop("LOOP", "NERFIN", new Identifier("VAR"),
+                new BooleanOperation("BOTH SAEM",
+                        List.of(new Identifier("VAR"), new Literal("NUMBR", 5))),
+                new Block(List.of(new Assignment("NUM",
+                        new MathOperation("SUM OF",
+                                List.of(new Identifier("NUM"), new Literal("NUMBR", 1)))))
+                )
+        );
+        syntaxTree.getProgram().setBody(List.of(varDeclaration, variableDeclaration1, loop));
+        interpreter.interpret(syntaxTree);
+        assertEquals(interpreter.getContext().get("NUM"), 15.0);
+
+
+        // loop break
+        interpreter = new Interpreter();
+        varDeclaration = new VariableDeclaration("NUM",
+                new Literal("NUMBR", 0));
+        loop = new Loop("LOOP", "UPPIN", new Identifier("VAR"),
+                new BooleanOperation("BOTH SAEM",
+                        List.of(new Identifier("VAR"), new Literal("NUMBR", 10))),
+                new Block(List.of(new Assignment("NUM",
+                        new MathOperation("SUM OF",
+                                List.of(new Identifier("NUM"), new Literal("NUMBR", 1)))),
+                        new Break())
+                )
+        );
+        syntaxTree.getProgram().setBody(List.of(varDeclaration, loop));
+        interpreter.interpret(syntaxTree);
+        assertEquals(interpreter.getContext().get("NUM"), 1.0);
+
+
+        // Nested loops
+        interpreter = new Interpreter();
+        ASTNode varDeclaration1 = new VariableDeclaration("NUM1",
+                new Literal("NUMBR", 0));
+        ASTNode varDeclaration2 = new VariableDeclaration("NUM2",
+                new Literal("NUMBR", 0));
+        ASTNode innerLoop = new Loop("LOOP", "UPPIN", new Identifier("VAR2"),
+                new BooleanOperation("BOTH SAEM",
+                        List.of(new Identifier("VAR2"), new Literal("NUMBR", 3))),
+                new Block(List.of(new Assignment("NUM2",
+                                new MathOperation("SUM OF",
+                                        List.of(new Identifier("NUM2"), new Literal("NUMBR", 1)))))
+                )
+        );
+        ASTNode outerLoop = new Loop("LOOP", "UPPIN", new Identifier("VAR1"),
+                new BooleanOperation("BOTH SAEM",
+                        List.of(new Identifier("VAR1"), new Literal("NUMBR", 2))),
+                new Block(List.of(new Assignment("NUM1",
+                                new MathOperation("SUM OF",
+                                        List.of(new Identifier("NUM1"), new Literal("NUMBR", 1)))),
+                        innerLoop, new Assignment("VAR2", new Literal("NUMBR", 0)))
+                )
+        );
+        syntaxTree.getProgram().setBody(List.of(varDeclaration1, varDeclaration2, outerLoop));
+        interpreter.interpret(syntaxTree);
+        assertEquals(interpreter.getContext().get("NUM1"), 2.0);
+        assertEquals(interpreter.getContext().get("NUM2"), 6.0);
+    }
+
 
 
 }
