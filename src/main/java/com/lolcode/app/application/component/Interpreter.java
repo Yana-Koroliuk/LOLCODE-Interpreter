@@ -2,7 +2,9 @@ package com.lolcode.app.application.component;
 
 import com.lolcode.app.application.component.interpreter.Context;
 import com.lolcode.app.domain.SyntaxTree;
+import lombok.Getter;
 
+@Getter
 public class Interpreter {
 
     private Context context;

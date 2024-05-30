@@ -5,6 +5,7 @@ import com.lolcode.app.application.component.parser.ParseType;
 import lombok.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -47,6 +48,14 @@ public class FunctionCall extends ASTNode {
             newContext.put(function.getParams().get(i), args.get(i).interpret(context));
         }
 
-        return function.getBody().interpret(newContext);
+        Object functionResult = function.getBody().interpret(newContext);
+
+        for (String key : context.keySet()) {
+            if (newContext.containsKey(key) && !Objects.equals(context.get(key), newContext.get(key))) {
+                context.put(key, newContext.get(key));
+            }
+        }
+
+        return functionResult;
     }
 }
